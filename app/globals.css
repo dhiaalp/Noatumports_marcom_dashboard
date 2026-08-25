@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --navy: #00204e;
+  --blue: #21578a;
+  --teal: #4cada9;
+  --pale-blue: #9bb2ce;
+  --canvas: #d8dcdf;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--canvas); }
+body { font-family: Arial, "Segoe UI", sans-serif; color: var(--navy); }
+button, select { font: inherit; }
+button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline-offset: 1px; }
+
+@layer components {
+  .panel {
+    @apply min-h-0 overflow-hidden rounded-[4px] border border-[#c7cdd1] bg-white shadow-card;
+  }
+  .panel-title {
+    @apply flex h-8 shrink-0 items-center border-b border-[#d8dcdf] px-3 text-[11px] font-bold text-noatum-deep;
+  }
+  .chart-fill { @apply h-full min-h-0 w-full; }
+  .data-badge { @apply rounded-full px-2 py-0.5 text-[9px] font-bold; }
+  .data-badge.actual { @apply bg-[#edf4e3] text-[#52751b]; }
+  .data-badge.plan { @apply bg-[#fff5df] text-[#a44e0c]; }
+  .compact-table { @apply w-full table-fixed border-collapse text-[9px]; }
+  .compact-table th { @apply bg-[#edf0f2] px-2 py-1.5 text-left text-[8px] uppercase text-[#50657d]; }
+  .compact-table td { @apply border-t border-[#e3e6e8] px-2 py-1.5; }
+  .compact-table th:not(:first-child), .compact-table td:not(:first-child) { @apply text-right; }
+}
+
+.echarts-for-react, canvas { outline: none; }
+
+@media (max-height: 720px) {
+  .panel-title { height: 26px; font-size: 10px; }
+  .compact-table { font-size: 8px; }
+  .compact-table th { font-size: 7px; padding-top: 3px; padding-bottom: 3px; }
+  .compact-table td { padding-top: 3px; padding-bottom: 3px; }
+}
+
+@media (max-height: 620px) {
+  .dashboard-header { height: 72px; }
+  .dashboard-header-top { height: 44px; }
+  .dashboard-nav { height: 28px; }
+  .dashboard-main { grid-template-rows: 82px minmax(0, 1fr); }
+  .metric-tile-context { display: none; }
+  .metric-tile { padding-top: 2px; padding-bottom: 2px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; }
+}
+
+@page { size: landscape; margin: 6mm; }
+
+@media print {
+  html, body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .dashboard-shell { width: 100vw; height: 100vh; min-height: 0; }
+  button, select { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
