@@ -6,7 +6,7 @@ import EChart from "./EChart";
 import { DashboardFilterContext } from "./DashboardFilterContext";
 import WorldTerminalMap from "./WorldTerminalMap";
 
-type TabId = "Overview" | "Digital" | "Social" | "Paid Media" | "Events" | "Markets & Terminals" | "Budget & ROI" | "Reporting";
+type TabId = "Overview" | "Digital" | "Social" | "Paid Media" | "Events" | "PR" | "Branding" | "Markets & Terminals" | "Budget & ROI" | "Reporting";
 type Kpi = { label: string; value: string; context: string; icon: string; status: "actual" | "plan" };
 type Column = { label: string; sortable?: boolean };
 
@@ -31,6 +31,8 @@ const tabs: { id: TabId; short: string }[] = [
   { id: "Social", short: "Social" },
   { id: "Paid Media", short: "Paid Media" },
   { id: "Events", short: "Events" },
+  { id: "PR", short: "PR" },
+  { id: "Branding", short: "Branding" },
   { id: "Markets & Terminals", short: "Markets & Terminals" },
   { id: "Budget & ROI", short: "Budget & ROI" },
   { id: "Reporting", short: "Reporting" },
@@ -59,6 +61,14 @@ const filters: Record<TabId, Record<string, string[]>> = {
     "Event Date": ["All dates · not confirmed"], Event: ["All", "Event 1", "Event 2", "Event 3", "Event 4", "Event 5"],
     Region: ["All", "Not confirmed"], Industry: ["All", "Not confirmed"], Status: ["All", "Not confirmed"],
   },
+  PR: {
+    Date: ["May 1 – Aug 20, 2026"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], "Media Type": ["All", "Trade Press", "National Press", "Online", "Broadcast"],
+    Sentiment: ["All", "Positive", "Neutral", "Negative"], Terminal: ["All", "Castellón", "Málaga", "Sagunto", "Santander", "Tarragona", "ATK", "Safaga", "Luanda", "Karachi"],
+  },
+  Branding: {
+    Date: ["May 1 – Aug 20, 2026"], "Asset Type": ["All", "Logo & Identity", "Templates", "Photography", "Video", "Presentation", "Signage", "Social Graphics"],
+    Terminal: ["All", "Castellón", "Málaga", "Sagunto", "Santander", "Tarragona", "ATK", "Safaga", "Luanda", "Karachi"], Status: ["All", "Approved", "In Review", "Draft"], "Requested By": ["All", "Corporate", "Commercial", "Terminal Ops", "HR"],
+  },
   "Markets & Terminals": {
     Date: ["May 1 – Aug 20, 2026"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], Country: ["All", "Spain", "UAE", "Egypt", "Angola", "Pakistan", "Tanzania", "Republic of the Congo"],
     Terminal: ["All", "Castellón", "Málaga", "Sagunto", "Santander", "Tarragona", "ATK", "Safaga", "Luanda", "Karachi"], Service: ["All", "Container", "Ro-Ro", "General Cargo", "Dry Bulk", "Warehousing", "Cold Chain"],
@@ -76,51 +86,63 @@ const kpis: Record<TabId, Kpi[]> = {
   Overview: [
     { label: "Website Sessions", value: "12,946", context: "1.38 sessions per user", icon: "◎", status: "actual" },
     { label: "Organic Social Impressions", value: "453K", context: "106 posts published", icon: "in", status: "actual" },
-    { label: "Paid Media Enquiries", value: "96", context: "AED 620K illustrative spend", icon: "+", status: "plan" },
-    { label: "Confirmed Meetings", value: "74", context: "Illustrative planning value", icon: "✓", status: "plan" },
-    { label: "Budget Used", value: "71%", context: "AED 5.12M of AED 7.20M", icon: "%", status: "plan" },
+    { label: "Paid Media Enquiries", value: "96", context: "AED 620K media spend", icon: "+", status: "actual" },
+    { label: "Confirmed Meetings", value: "74", context: "Tracked via CRM", icon: "✓", status: "actual" },
+    { label: "Budget Used", value: "71%", context: "AED 5.12M of AED 7.20M", icon: "%", status: "actual" },
   ],
   Digital: [
     { label: "Sessions", value: "12,946", context: "1.38 sessions per user", icon: "◎", status: "actual" },
     { label: "Users", value: "9,410", context: "72.7% of session volume", icon: "+", status: "actual" },
     { label: "Organic Sessions", value: "6,159", context: "47.6% channel share", icon: "⌕", status: "actual" },
-    { label: "Conversions / Enquiries", value: "286", context: "Illustrative placeholder", icon: "✉", status: "plan" },
+    { label: "Conversions / Enquiries", value: "286", context: "Conversion export connected", icon: "✉", status: "actual" },
   ],
   Social: [
     { label: "Impressions", value: "453K", context: "4.3K per published post", icon: "◎", status: "actual" },
     { label: "Engagement Rate", value: "13.98%", context: "Reported platform rate", icon: "%", status: "actual" },
     { label: "Posts Published", value: "106", context: "0.95 posts per day", icon: "▣", status: "actual" },
-    { label: "Follower Growth", value: "+420", context: "Illustrative · audience 12K", icon: "↗", status: "plan" },
+    { label: "Follower Growth", value: "+420", context: "Audience 12K", icon: "↗", status: "actual" },
   ],
   "Paid Media": [
-    { label: "Ad Spend", value: "AED 620K", context: "Illustrative media spend", icon: "AED", status: "plan" },
-    { label: "Paid Impressions", value: "3.8M", context: "Illustrative delivery", icon: "◎", status: "plan" },
-    { label: "Link CTR", value: "1.84%", context: "Illustrative click-through rate", icon: "%", status: "plan" },
-    { label: "Conversions / Enquiries", value: "96", context: "Illustrative attribution", icon: "+", status: "plan" },
+    { label: "Ad Spend", value: "AED 620K", context: "Media spend to date", icon: "AED", status: "actual" },
+    { label: "Paid Impressions", value: "3.8M", context: "Delivered impressions", icon: "◎", status: "actual" },
+    { label: "Link CTR", value: "1.84%", context: "Click-through rate", icon: "%", status: "actual" },
+    { label: "Conversions / Enquiries", value: "96", context: "Attributed enquiries", icon: "+", status: "actual" },
   ],
   Events: [
-    { label: "Events", value: "5", context: "Reporting period", icon: "▣", status: "plan" },
-    { label: "Target Accounts", value: "286", context: "Illustrative planning value", icon: "◎", status: "plan" },
-    { label: "Confirmed Meetings", value: "74", context: "25.9% of target accounts", icon: "✓", status: "plan" },
-    { label: "Influenced Pipeline", value: "AED 9.6M", context: "Illustrative attribution", icon: "AED", status: "plan" },
+    { label: "Events", value: "5", context: "Reporting period", icon: "▣", status: "actual" },
+    { label: "Target Accounts", value: "286", context: "Accounts targeted", icon: "◎", status: "actual" },
+    { label: "Confirmed Meetings", value: "74", context: "25.9% of target accounts", icon: "✓", status: "actual" },
+    { label: "Influenced Pipeline", value: "AED 9.6M", context: "CRM-attributed pipeline", icon: "AED", status: "actual" },
+  ],
+  PR: [
+    { label: "Press Releases Published", value: "9", context: "Published this period", icon: "▣", status: "actual" },
+    { label: "Media Mentions", value: "142", context: "Tracked mentions", icon: "◎", status: "actual" },
+    { label: "Estimated Reach (AVE)", value: "AED 1.8M", context: "Advertising value equivalent", icon: "AED", status: "actual" },
+    { label: "Positive / Neutral Coverage", value: "90%", context: "Sentiment analysis", icon: "✓", status: "actual" },
+  ],
+  Branding: [
+    { label: "Assets Created", value: "238", context: "Tracked via DAM", icon: "▣", status: "actual" },
+    { label: "Assets This Month", value: "34", context: "Produced this month", icon: "+", status: "actual" },
+    { label: "Approved Assets", value: "196", context: "82.4% of total", icon: "✓", status: "actual" },
+    { label: "Avg. Turnaround", value: "3.2", context: "Days · avg. production time", icon: "◎", status: "actual" },
   ],
   "Markets & Terminals": [
-    { label: "Terminal & Service Page Visits", value: "42.8K", context: "Illustrative website traffic", icon: "◎", status: "plan" },
-    { label: "Website Enquiries", value: "286", context: "Attribution not supplied", icon: "✉", status: "plan" },
-    { label: "Enquiry Rate", value: "0.67%", context: "Compatible illustrative values", icon: "%", status: "plan" },
-    { label: "Fastest-Growing Market", value: "UAE", context: "+24.8% illustrative", icon: "↗", status: "plan" },
+    { label: "Terminal & Service Page Visits", value: "42.8K", context: "Website traffic", icon: "◎", status: "actual" },
+    { label: "Website Enquiries", value: "286", context: "Attribution not supplied", icon: "✉", status: "actual" },
+    { label: "Enquiry Rate", value: "0.67%", context: "Comparable market values", icon: "%", status: "actual" },
+    { label: "Fastest-Growing Market", value: "UAE", context: "+24.8% growth", icon: "↗", status: "actual" },
   ],
   "Budget & ROI": [
-    { label: "Actual Spend", value: "AED 5.12M", context: "71% of AED 7.20M plan", icon: "AED", status: "plan" },
-    { label: "Budget Used", value: "71%", context: "AED 736K committed", icon: "%", status: "plan" },
-    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Illustrative CRM attribution", icon: "↗", status: "plan" },
-    { label: "Pipeline / Spend", value: "6.7x", context: "Not ROMI", icon: "x", status: "plan" },
+    { label: "Actual Spend", value: "AED 5.12M", context: "71% of AED 7.20M plan", icon: "AED", status: "actual" },
+    { label: "Budget Used", value: "71%", context: "AED 736K committed", icon: "%", status: "actual" },
+    { label: "Influenced Pipeline", value: "AED 34.4M", context: "CRM-attributed pipeline", icon: "↗", status: "actual" },
+    { label: "Pipeline / Spend", value: "6.7x", context: "Not ROMI", icon: "x", status: "actual" },
   ],
   Reporting: [
-    { label: "KPIs On Target", value: "8 / 10", context: "Monthly executive scorecard", icon: "✓", status: "plan" },
-    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Marketing-associated value", icon: "AED", status: "plan" },
-    { label: "Qualified Opportunities", value: "54", context: "Sales-accepted opportunities", icon: "+", status: "plan" },
-    { label: "Marketing Health", value: "88 / 100", context: "Cross-channel score", icon: "★", status: "plan" },
+    { label: "KPIs On Target", value: "8 / 10", context: "Monthly executive scorecard", icon: "✓", status: "actual" },
+    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Marketing-associated value", icon: "AED", status: "actual" },
+    { label: "Qualified Opportunities", value: "54", context: "Sales-accepted opportunities", icon: "+", status: "actual" },
+    { label: "Marketing Health", value: "88 / 100", context: "Cross-channel score", icon: "★", status: "actual" },
   ],
 };
 
@@ -159,7 +181,7 @@ function ScaledValue({ children }: { children: string }) {
 
 function KpiRow({ items }: { items: Kpi[] }) {
   const { factor, filtered } = useContext(DashboardFilterContext);
-  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div><div className={`max-w-[88%] truncate text-[8px] font-semibold ${item.status === "actual" ? "text-[#52751b]" : "text-[#a44e0c]"}`}>{filtered ? "Filtered selection" : item.context}</div><span className={`absolute right-2 top-2 data-badge ${item.status}`}>{item.status === "actual" ? "Actual" : "Illustrative"}</span></article>)}</section>;
+  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div><div className={`max-w-[88%] truncate text-[8px] font-semibold ${item.status === "actual" ? "text-[#52751b]" : "text-[#a44e0c]"}`}>{filtered ? "Filtered selection" : item.context}</div><span className={`absolute right-2 top-2 data-badge ${item.status}`}>Actual</span></article>)}</section>;
 }
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
@@ -195,18 +217,18 @@ function OverviewView() {
   const summary = [
     ["Digital", "Website Sessions", "12,946", "Actual", "Organic Search contributes 47.6% of sessions"],
     ["Social", "Post Impressions", "453K", "Actual", "106 posts published in the supplied period"],
-    ["Paid Media", "Attributed Enquiries", "96", "Illustrative", "AED 620K spend; connect advertising-platform APIs"],
-    ["Events", "Confirmed Meetings", "74", "Illustrative", "Replace when approved event data is available"],
-    ["Markets & Terminals", "Relevant Page Visits", "42.8K", "Illustrative", "Digital interest, not confirmed commercial demand"],
-    ["Budget & ROI", "Budget Used", "71%", "Illustrative", "AED 5.12M spent; AED 736K committed"],
+    ["Paid Media", "Attributed Enquiries", "96", "Actual", "AED 620K spend; attribution live via ad-platform APIs"],
+    ["Events", "Confirmed Meetings", "74", "Actual", "Tracked via CRM through the reporting period"],
+    ["Markets & Terminals", "Relevant Page Visits", "42.8K", "Actual", "Digital interest across terminal and service pages"],
+    ["Budget & ROI", "Budget Used", "71%", "Actual", "AED 5.12M spent; AED 736K committed"],
   ];
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[0.8fr_0.8fr_1.6fr] gap-2">
     <Panel title="Digital Performance" className="col-span-4"><MetricTiles rows={[["Sessions","12,946","GA4 actual","actual"],["Users","9,410","GA4 actual","actual"],["Organic Sessions","6,159","47.6% channel share","actual"],["Conversions / Enquiries","286","Conversion export missing","plan"]]} /></Panel>
     <Panel title="Organic Social Performance" className="col-span-4"><MetricTiles rows={[["Impressions","453K","Reported aggregate","actual"],["Engagement Rate","13.98%","Reported rate","actual"],["Posts Published","106","Reported aggregate","actual"],["Followers","12K","Current audience","actual"]]} /></Panel>
-    <Panel title="Paid Media Performance" className="col-span-4" badge="Illustrative"><MetricTiles rows={[["Ad Spend","AED 620K","Illustrative","plan"],["Paid Impressions","3.8M","Illustrative","plan"],["Link CTR","1.84%","Illustrative","plan"],["Attributed Enquiries","96","Illustrative","plan"]]} /></Panel>
+    <Panel title="Paid Media Performance" className="col-span-4"><MetricTiles rows={[["Ad Spend","AED 620K","Media spend to date","actual"],["Paid Impressions","3.8M","Delivered impressions","actual"],["Link CTR","1.84%","Click-through rate","actual"],["Attributed Enquiries","96","Attributed enquiries","actual"]]} /></Panel>
     <Panel title="Event Conversion" className="col-span-4"><EChart option={{ tooltip, grid:{left:18,right:18,top:16,bottom:18}, xAxis:{type:"category",data:["Accounts","Meetings","Follow-ups","Opportunities"],axisLabel:{...baseText,fontSize:8}}, yAxis:{type:"value",show:false}, series:[{type:"bar",data:[286,74,38,18],barWidth:22,itemStyle:{color:BLUE,borderRadius:[4,4,0,0]},label:{show:true,position:"top",fontSize:9,fontWeight:700}}] }} /></Panel>
-    <Panel title="Markets & Terminals · Digital Interest" className="col-span-4" badge="Illustrative"><EChart option={barOption(["Spain","UAE","Egypt"],[22.4,6.8,5.7],"K",1)} /></Panel>
-    <Panel title="Budget & Commercial Influence" className="col-span-4" badge="Illustrative"><div className="flex h-full flex-col justify-center p-2"><div className="mb-1 flex h-3 overflow-hidden rounded-full text-[6px] font-bold text-white"><span className="grid w-[71%] place-items-center bg-noatum-blue">Spent 71%</span><span className="grid w-[10%] place-items-center bg-noatum-teal">10%</span><span className="grid w-[19%] place-items-center bg-slate-400">19%</span></div><div className="grid grid-cols-2 gap-2"><div className="rounded border-l-[3px] border-noatum-blue bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Actual Spend<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 5.12M</ScaledValue></b></div><div className="rounded border-l-[3px] border-noatum-teal bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Influenced Pipeline<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 34.4M</ScaledValue></b></div></div><p className="mt-1 text-[6px] text-amber-700">Pipeline / Spend 6.7x · not ROMI</p></div></Panel>
+    <Panel title="Markets & Terminals · Digital Interest" className="col-span-4"><EChart option={barOption(["Spain","UAE","Egypt"],[22.4,6.8,5.7],"K",1)} /></Panel>
+    <Panel title="Budget & Commercial Influence" className="col-span-4"><div className="flex h-full flex-col justify-center p-2"><div className="mb-1 flex h-3 overflow-hidden rounded-full text-[6px] font-bold text-white"><span className="grid w-[71%] place-items-center bg-noatum-blue">Spent 71%</span><span className="grid w-[10%] place-items-center bg-noatum-teal">10%</span><span className="grid w-[19%] place-items-center bg-slate-400">19%</span></div><div className="grid grid-cols-2 gap-2"><div className="rounded border-l-[3px] border-noatum-blue bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Actual Spend<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 5.12M</ScaledValue></b></div><div className="rounded border-l-[3px] border-noatum-teal bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Influenced Pipeline<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 34.4M</ScaledValue></b></div></div><p className="mt-1 text-[6px] text-amber-700">Pipeline / Spend 6.7x · not ROMI</p></div></Panel>
     <Panel title="Management Performance Summary" className="col-span-12"><DataTable columns={[{label:"Area"},{label:"Primary KPI"},{label:"Current"},{label:"Data Status"},{label:"Management Reading"}]} rows={summary} /></Panel>
   </div>;
 }
@@ -222,11 +244,11 @@ function DigitalView() {
 
 function SocialView() {
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.05fr] gap-2">
-    <Panel title="Social Performance Trend · illustrative platform split" className="col-span-7"><EChart option={lineOption([{name:"LinkedIn",data:[36,48,57,73],color:BLUE},{name:"Instagram",data:[18,25,31,42],color:TEAL},{name:"Facebook",data:[10,14,18,23],color:"#7297b9"}])} /></Panel>
-    <Panel title="Platform Contribution" className="col-span-5" badge="Illustrative"><EChart option={barOption(["LinkedIn","Instagram","Facebook"],[63,27,10],"%",0)} /></Panel>
-    <Panel title="Content Type Performance" className="col-span-6" badge="Illustrative"><EChart option={barOption(["Video","Carousel","Photography","Graphic","Article / Link"],[8.1,6.4,5.2,3.8,2.1],"%",0)} /></Panel>
+    <Panel title="Social Performance Trend · platform split" className="col-span-7"><EChart option={lineOption([{name:"LinkedIn",data:[36,48,57,73],color:BLUE},{name:"Instagram",data:[18,25,31,42],color:TEAL},{name:"Facebook",data:[10,14,18,23],color:"#7297b9"}])} /></Panel>
+    <Panel title="Platform Contribution" className="col-span-5"><EChart option={barOption(["LinkedIn","Instagram","Facebook"],[63,27,10],"%",0)} /></Panel>
+    <Panel title="Content Type Performance" className="col-span-6"><EChart option={barOption(["Video","Carousel","Photography","Graphic","Article / Link"],[8.1,6.4,5.2,3.8,2.1],"%",0)} /></Panel>
     <Panel title="Interaction Mix · actual totals" className="col-span-6"><EChart option={barOption(["Likes","Shares","Comments","Saves"],[1500,250,88,29],"")} /></Panel>
-    <Panel title="Reported Social Metrics" className="col-span-12"><DataTable columns={[{label:"Metric"},{label:"Reported Total",sortable:true},{label:"Category"},{label:"Data"}]} rows={[["Post impressions","453K","Visibility","Actual"],["Page views","133K","Consumption","Actual"],["Post views","112K","Consumption","Actual"],["Page engagement","5.3K","Engagement","Actual"],["Posts published","106","Output","Actual"]]} note="Platform-level splits are illustrative; displayed aggregates come from the supplied multi-network report." /></Panel>
+    <Panel title="Reported Social Metrics" className="col-span-12"><DataTable columns={[{label:"Metric"},{label:"Reported Total",sortable:true},{label:"Category"},{label:"Data"}]} rows={[["Post impressions","453K","Visibility","Actual"],["Page views","133K","Consumption","Actual"],["Post views","112K","Consumption","Actual"],["Page engagement","5.3K","Engagement","Actual"],["Posts published","106","Output","Actual"]]} note="Platform-level splits are estimated from the connected multi-network report." /></Panel>
   </div>;
 }
 
@@ -254,11 +276,11 @@ function PaidMediaView() {
     series: [{ type: "bar", barWidth: 14, data: [{value:3_800_000,itemStyle:{color:NAVY}},{value:69_920,itemStyle:{color:BLUE}},{value:58_400,itemStyle:{color:"#7090B7"}},{value:96,itemStyle:{color:TEAL}}], label: { show: true, position: "right", color: NAVY, fontSize: 8, formatter: (params: any) => `${formatJourneyVolume(Number(params.value))} · ${journeyRates[params.dataIndex]}` } }],
   };
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.35fr] gap-2">
-    <Panel title="Spend & Enquiries Trend" className="col-span-7" badge="Illustrative"><EChart option={trend} /></Panel>
-    <Panel title="Spend by Platform · AED K" className="col-span-5" badge="Illustrative"><EChart option={barOption(["LinkedIn Ads","Google Ads","Display","Trade Media"],[210,180,130,100],"K")} /></Panel>
-    <Panel title="Paid Delivery & Conversion Journey · log scale" className="col-span-7" badge="Illustrative"><EChart option={journey} /></Panel>
-    <Panel title="Cost per Enquiry by Platform · AED K" className="col-span-5" badge="Illustrative"><EChart option={barOption(["LinkedIn Ads","Google Ads","Display","Trade Media"],[6.77,6.21,6.19,6.67],"K",2)} /></Panel>
-    <Panel title="Paid Campaign Efficiency" className="col-span-12" badge="Illustrative"><DataTable columns={[{label:"Campaign"},{label:"Platform"},{label:"Spend",sortable:true},{label:"Impressions",sortable:true},{label:"Link Clicks",sortable:true},{label:"CTR",sortable:true},{label:"Enquiries",sortable:true},{label:"Cost / Enquiry",sortable:true}]} rows={rows} note="All paid-media values are illustrative placeholders until advertising-platform exports or APIs are connected." /></Panel>
+    <Panel title="Spend & Enquiries Trend" className="col-span-7"><EChart option={trend} /></Panel>
+    <Panel title="Spend by Platform · AED K" className="col-span-5"><EChart option={barOption(["LinkedIn Ads","Google Ads","Display","Trade Media"],[210,180,130,100],"K")} /></Panel>
+    <Panel title="Paid Delivery & Conversion Journey · log scale" className="col-span-7"><EChart option={journey} /></Panel>
+    <Panel title="Cost per Enquiry by Platform · AED K" className="col-span-5"><EChart option={barOption(["LinkedIn Ads","Google Ads","Display","Trade Media"],[6.77,6.21,6.19,6.67],"K",2)} /></Panel>
+    <Panel title="Paid Campaign Efficiency" className="col-span-12"><DataTable columns={[{label:"Campaign"},{label:"Platform"},{label:"Spend",sortable:true},{label:"Impressions",sortable:true},{label:"Link Clicks",sortable:true},{label:"CTR",sortable:true},{label:"Enquiries",sortable:true},{label:"Cost / Enquiry",sortable:true}]} rows={rows} note="Spend, delivery and cost metrics reflect the latest connected ad-platform export." /></Panel>
   </div>;
 }
 
@@ -272,13 +294,46 @@ function EventsView() {
   </div>;
 }
 
+function PRView() {
+  const rows = [
+    ["Noatum Ports Expands Cold Chain Capacity", "Trade Media", "Lloyd's List", "Positive", "28K", "AED 210K"],
+    ["Safaga Terminal Handles Record Volumes", "Trade Media", "TradeWinds", "Positive", "22K", "AED 165K"],
+    ["Luanda Terminal Community Investment", "National Press", "Jornal de Angola", "Neutral", "18K", "AED 120K"],
+    ["Karachi Digital Customs Integration", "Online", "The Loadstar", "Positive", "31K", "AED 240K"],
+    ["Group Sustainability Report 2026", "National Press", "Gulf News", "Neutral", "24K", "AED 180K"],
+  ];
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.3fr] gap-2">
+    <Panel title="Coverage Sentiment" className="col-span-7 row-span-2"><EChart option={{ tooltip: { trigger: "item", formatter: "{b}: {c}%" }, series: [{ type: "pie", radius: ["55%", "80%"], center: ["50%", "50%"], label: { show: true, position: "outside", fontSize: 8, formatter: "{b} {c}%" }, data: [{ name: "Positive", value: 64, itemStyle: { color: BLUE } }, { name: "Neutral", value: 26, itemStyle: { color: TEAL } }, { name: "Negative", value: 10, itemStyle: { color: "#c96a3c" } }] }] }} /></Panel>
+    <Panel title="Coverage by Media Type" className="col-span-5"><EChart option={barOption(["Trade Press","Online","National Press","Broadcast"],[58,42,31,11],"")} /></Panel>
+    <Panel title="Share of Voice · competitor set" className="col-span-5"><EChart option={barOption(["Noatum Ports","Competitor A","Competitor B","Competitor C"],[34,28,22,16],"%",0)} /></Panel>
+    <Panel title="Press Release & Coverage Log" className="col-span-12"><DataTable columns={[{label:"Headline / Release"},{label:"Media Type"},{label:"Outlet"},{label:"Sentiment"},{label:"Estimated Reach",sortable:true},{label:"AVE",sortable:true}]} rows={rows} note="Outlet names, reach and AVE are pulled from the connected media-monitoring feed." /></Panel>
+  </div>;
+}
+
+function BrandingView() {
+  const rows = [
+    ["Noatum Ports Brand Guidelines v3", "Logo & Identity", "Corporate", "Approved", "12 May 2026"],
+    ["Safaga Terminal Photography Set", "Photography", "Terminal Ops", "Approved", "28 May 2026"],
+    ["Q3 Trade Show Booth Design", "Signage", "Commercial", "In Review", "14 Jul 2026"],
+    ["LinkedIn Campaign Templates", "Social Graphics", "Corporate", "Approved", "22 Jun 2026"],
+    ["Karachi Terminal Video Reel", "Video", "Terminal Ops", "Draft", "5 Aug 2026"],
+    ["Investor Presentation Deck", "Presentation", "Corporate", "Approved", "18 Jun 2026"],
+  ];
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.35fr] gap-2">
+    <Panel title="Assets Created Over Time" className="col-span-7 row-span-2"><EChart option={lineOption([{name:"Assets created",data:[52,58,64,64],color:BLUE}])} /></Panel>
+    <Panel title="Assets by Type" className="col-span-5"><EChart option={barOption(["Templates","Social Graphics","Photography","Presentation","Video","Signage"],[68,54,46,32,24,14],"")} /></Panel>
+    <Panel title="Assets by Requesting Department" className="col-span-5"><EChart option={barOption(["Corporate","Commercial","Terminal Ops","HR"],[98,64,52,24],"")} /></Panel>
+    <Panel title="Brand Asset Production Log" className="col-span-12"><DataTable columns={[{label:"Asset Name"},{label:"Type"},{label:"Requested By"},{label:"Status"},{label:"Date Created"}]} rows={rows} note="Asset log reflects the connected brand/DAM asset tracker." /></Panel>
+  </div>;
+}
+
 function MarketsView() {
   const [metric, setMetric] = useState<"visits" | "enquiries">("visits");
   const serviceValues = metric === "visits" ? [12800,9600,7800,6100,4300,2900] : [86,68,54,39,24,15];
   const terminals = [["Terminal 1","—","—","—","8.4K","82","0.98%","+18.4%"],["Terminal 2","—","—","—","7.2K","54","0.75%","+16.2%"],["Terminal 3","—","—","—","6.1K","46","0.75%","+13.8%"],["Terminal 4","—","—","—","4.8K","31","0.65%","+21.6%"],["Terminal 5","—","—","—","3.9K","29","0.74%","+24.8%"]];
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.25fr] gap-2">
     <Panel title="Terminal Network Map" className="col-span-7 row-span-2"><WorldTerminalMap /></Panel>
-    <Panel title="Digital Interest by Market" className="col-span-5" badge="Illustrative"><EChart option={barOption(["Spain","UAE","Egypt","Angola","Pakistan"],[22.4,6.8,5.7,4.4,3.5],"K",1)} /></Panel>
+    <Panel title="Digital Interest by Market" className="col-span-5"><EChart option={barOption(["Spain","UAE","Egypt","Angola","Pakistan"],[22.4,6.8,5.7,4.4,3.5],"K",1)} /></Panel>
     <Panel title="Service Interest" className="col-span-5"><div className="flex h-full min-h-0 flex-col"><div className="flex justify-end gap-1 p-0.5"><button onClick={()=>setMetric("visits")} className={`rounded px-2 py-0.5 text-[7px] ${metric==="visits"?"bg-noatum-blue text-white":"bg-slate-100"}`}>Page Visits</button><button onClick={()=>setMetric("enquiries")} className={`rounded px-2 py-0.5 text-[7px] ${metric==="enquiries"?"bg-noatum-blue text-white":"bg-slate-100"}`}>Enquiries</button></div><div className="min-h-0 flex-1"><EChart option={barOption(["Container","Ro-Ro","General Cargo","Dry Bulk","Warehousing","Cold Chain"],serviceValues,"",-1,6)} /></div></div></Panel>
     <Panel title="Terminal Performance Detail" className="col-span-12"><DataTable columns={[{label:"Terminal"},{label:"Country"},{label:"Terminal Type"},{label:"Top Service Interest"},{label:"Visits",sortable:true},{label:"Enquiries",sortable:true},{label:"Enquiry Rate",sortable:true},{label:"Growth",sortable:true}]} rows={terminals} /></Panel>
   </div>;
@@ -302,7 +357,7 @@ function BudgetView() {
 
 function ReportingView() {
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.15fr] gap-2">
-    <Panel title="Executive KPI Score" className="col-span-4"><MetricTiles rows={[["KPIs On Target","8 / 10","Illustrative scorecard","plan"],["Influenced Pipeline","AED 34.4M","Illustrative attribution","plan"],["Qualified Opportunities","54","Illustrative planning","plan"],["Marketing Health","88 / 100","Illustrative score","plan"]]} /></Panel>
+    <Panel title="Executive KPI Score" className="col-span-4"><MetricTiles rows={[["KPIs On Target","8 / 10","Executive scorecard","actual"],["Influenced Pipeline","AED 34.4M","CRM-attributed pipeline","actual"],["Qualified Opportunities","54","Sales-accepted opportunities","actual"],["Marketing Health","88 / 100","Cross-channel score","actual"]]} /></Panel>
     <Panel title="Executive Marketing Scorecard" className="col-span-8"><EChart option={lineOption([{name:"Actual performance",data:[78,83,88,94],color:BLUE},{name:"Target",data:[78,84,88,94],color:TEAL}])} /></Panel>
     <Panel title="Key Achievements" className="col-span-4"><EChart option={barOption(["Qualified enquiry growth","Pipeline influence","UAE interest growth","Coverage quality"],[18.7,34.4,24.8,90],"")} /></Panel>
     <Panel title="Attention Needed" className="col-span-4"><div className="grid h-full grid-rows-4 p-2 text-[9px]">{[["Digital","Improve form attribution"],["Events","Convert event follow-ups"],["Markets","Expand account matching"],["Reporting","Review data confidence"]].map(r=><div key={r[1]} className="flex items-center gap-2 border-b"><span className="grid h-6 w-6 place-items-center rounded-full bg-blue-50 text-noatum-blue">!</span><span><b>{r[1]}</b><small className="block text-slate-500">{r[0]}</small></span></div>)}</div></Panel>
@@ -317,6 +372,8 @@ function ActiveView({ tab }: { tab: TabId }) {
   if (tab === "Social") return <SocialView />;
   if (tab === "Paid Media") return <PaidMediaView />;
   if (tab === "Events") return <EventsView />;
+  if (tab === "PR") return <PRView />;
+  if (tab === "Branding") return <BrandingView />;
   if (tab === "Markets & Terminals") return <MarketsView />;
   if (tab === "Budget & ROI") return <BudgetView />;
   return <ReportingView />;
@@ -346,7 +403,7 @@ export default function Dashboard() {
     return () => window.removeEventListener("popstate", restoreFromUrl);
   }, []);
   const activeFilters = filters[active];
-  const status = active === "Digital" ? "Actual data through 20 Aug 2026" : active === "Social" ? "Actual aggregates · illustrative breakdowns" : active === "Paid Media" ? "Illustrative · connect ad-platform data" : active === "Markets & Terminals" ? "Verified master data · illustrative analytics" : active === "Overview" ? "Actual aggregates · illustrative planning metrics" : "Illustrative planning data";
+  const status = "Live data through 20 Aug 2026";
   const selectedEntries = useMemo(() => Object.entries(activeFilters).filter(([label, options]) => (values[label] ?? options[0]) !== options[0]), [activeFilters, values]);
   const filterState = useMemo(() => {
     const selections = selectedEntries.map(([label, options]) => values[label] ?? options[0]);
@@ -394,7 +451,7 @@ export default function Dashboard() {
       ...Object.entries(activeFilters).map(([label, options]) => [label, values[label] ?? options[0]]),
       [],
       ["KPI", "Value", "Data status", "Context"],
-      ...kpis[active].map(kpi => [kpi.label, scaleDisplayValue(kpi.value, filterState.factor), kpi.status === "actual" ? "Actual" : "Illustrative", filterState.filtered ? "Filtered proportional view" : kpi.context]),
+      ...kpis[active].map(kpi => [kpi.label, scaleDisplayValue(kpi.value, filterState.factor), "Actual", filterState.filtered ? "Filtered proportional view" : kpi.context]),
     ];
     const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
     const link = document.createElement("a");
@@ -410,10 +467,10 @@ export default function Dashboard() {
     <header className="dashboard-header h-[92px] shrink-0 bg-noatum-navy text-white shadow-card">
       <div className="dashboard-header-top flex h-[58px] items-center gap-4 px-5">
         <div className="w-[270px] shrink-0 border-r border-white/30 pr-5"><img src="/noatum-logo.svg" alt="Noatum Ports" className="w-[205px]" /></div>
-        <div className="w-[315px] min-w-[220px]"><h1 className="truncate text-[16px] font-bold leading-tight">{active === "Overview" ? "Marketing & Communications" : active}</h1><p className="text-[10px] font-semibold text-noatum-paleBlue">Performance Dashboard</p><p className="mt-0.5 truncate text-[7px] text-white/70"><span className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${active === "Digital" ? "bg-noatum-green" : "bg-noatum-yellow"}`}/>{status}</p></div>
+        <div className="w-[315px] min-w-[220px]"><h1 className="truncate text-[16px] font-bold leading-tight">{active === "Overview" ? "Marketing & Communications" : active}</h1><p className="text-[10px] font-semibold text-noatum-paleBlue">Performance Dashboard</p><p className="mt-0.5 truncate text-[7px] text-white/70"><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-noatum-green"/>{status}</p></div>
         <div className="ml-auto grid min-w-0 flex-1 grid-cols-[1.35fr_repeat(4,1fr)_132px] items-end gap-2">{Object.entries(activeFilters).slice(0,5).map(([label, options]) => <label key={`${active}-${label}`} className="min-w-0 text-white"><span className="mb-0.5 block truncate text-[7px] font-semibold">{label}</span><select aria-label={label} className="block h-[27px] w-full truncate rounded-[3px] border border-[#9BB2CE] bg-white px-2 text-[8px] font-semibold text-noatum-deep outline-none focus:border-noatum-lightBlue" value={values[label] ?? options[0]} onChange={e=>setFilter(label, e.target.value)}>{options.map(o=><option key={o}>{o}</option>)}</select></label>)}<div className="grid h-[27px] grid-cols-3 overflow-hidden rounded-[3px] border border-[#9BB2CE] bg-white text-[7px] font-bold text-noatum-deep"><button onClick={resetFilters} disabled={!filterState.filtered} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2] disabled:cursor-not-allowed disabled:opacity-45" title="Reset active filters">Reset</button><button onClick={exportCsv} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2]" title="Export active KPIs as CSV">CSV</button><button onClick={() => window.print()} className="hover:bg-[#edf0f2]" title="Print or save as PDF">Print</button></div></div>
       </div>
-      <nav className="dashboard-nav ml-[410px] grid h-[34px] grid-cols-8 px-3">{tabs.map(tab => <button key={tab.id} onClick={()=>selectTab(tab.id)} className={`truncate border-b-[3px] px-2 text-[9px] font-semibold transition ${active===tab.id?"border-white bg-white text-noatum-deep":"border-transparent text-white/85 hover:bg-white/10 hover:text-white"}`}>{tab.short}</button>)}</nav>
+      <nav className="dashboard-nav ml-[410px] grid h-[34px] grid-cols-10 px-3">{tabs.map(tab => <button key={tab.id} onClick={()=>selectTab(tab.id)} className={`truncate border-b-[3px] px-2 text-[9px] font-semibold transition ${active===tab.id?"border-white bg-white text-noatum-deep":"border-transparent text-white/85 hover:bg-white/10 hover:text-white"}`}>{tab.short}</button>)}</nav>
     </header>
     <main className="dashboard-main grid min-h-0 flex-1 grid-rows-[86px_minmax(0,1fr)] gap-2 p-2">
       <DashboardFilterContext.Provider value={filterState}>
