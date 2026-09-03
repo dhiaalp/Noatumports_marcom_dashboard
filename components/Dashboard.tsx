@@ -108,7 +108,7 @@ const kpis: Record<SectionId, Kpi[]> = {
     { label: "Events", value: "5", context: "Reporting period", icon: "▣", status: "actual" },
     { label: "Target Accounts", value: "286", context: "Accounts targeted", icon: "◎", status: "actual" },
     { label: "Confirmed Meetings", value: "74", context: "25.9% of target accounts", icon: "✓", status: "actual" },
-    { label: "Influenced Pipeline", value: "AED 9.6M", context: "CRM-attributed pipeline", icon: "AED", status: "actual" },
+    { label: "Pipeline", value: "AED 9.6M", context: "CRM-attributed pipeline", icon: "AED", status: "actual" },
   ],
   PR: [
     { label: "Press Releases Published", value: "9", context: "Published this period", icon: "▣", status: "actual" },
@@ -131,12 +131,12 @@ const kpis: Record<SectionId, Kpi[]> = {
   "Budget & ROI": [
     { label: "Actual Spend", value: "AED 5.12M", context: "71% of AED 7.20M plan", icon: "AED", status: "actual" },
     { label: "Budget Used", value: "71%", context: "AED 736K committed", icon: "%", status: "actual" },
-    { label: "Influenced Pipeline", value: "AED 34.4M", context: "CRM-attributed pipeline", icon: "↗", status: "actual" },
+    { label: "Pipeline", value: "AED 34.4M", context: "CRM-attributed pipeline", icon: "↗", status: "actual" },
     { label: "Pipeline / Spend", value: "6.7x", context: "Not ROMI", icon: "x", status: "actual" },
   ],
   Reporting: [
     { label: "KPIs On Target", value: "8 / 10", context: "Monthly executive scorecard", comparison: "+1 KPI vs last month", icon: "✓", status: "actual" },
-    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Marketing-associated value", comparison: "+11.0% vs last month", icon: "AED", status: "actual" },
+    { label: "Pipeline", value: "AED 34.4M", context: "Marketing-associated value", comparison: "+11.0% vs last month", icon: "AED", status: "actual" },
     { label: "Qualified Opportunities", value: "54", context: "Sales-accepted opportunities", comparison: "+21.4% vs last month", icon: "+", status: "actual" },
     { label: "Marketing Health", value: "88 / 100", context: "Cross-channel score", comparison: "+4 pts vs last month", icon: "★", status: "actual" },
   ],
@@ -432,7 +432,7 @@ function OtherActivitiesView() {
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.25fr] gap-2">
     <Panel title="Activity Outcomes" className="col-span-7 row-span-2"><EChart option={barOption(["Events · meetings","PR · mentions","Branding · approved assets","Markets · enquiries"],[74,142,196,286],"",1)} /></Panel>
     <Panel title="Other Activities Budget · AED K" className="col-span-5"><EChart option={barOption(["Events","PR & Media","Branding","Markets & Terminals"],[1144,624,792,560],"K",0)} /></Panel>
-    <Panel title="Commercial Influence" className="col-span-5"><MetricTiles rows={[["Influenced Pipeline","AED 18.0M","Activity-associated value","actual"],["Confirmed Meetings","74","Tracked through CRM","actual"],["Positive / Neutral PR","90%","Coverage sentiment","actual"],["Budget Used","71%","AED 3.12M spent","actual"]]} /></Panel>
+    <Panel title="Commercial Influence" className="col-span-5"><MetricTiles rows={[["Pipeline","AED 18.0M","Activity-associated value","actual"],["Confirmed Meetings","74","Tracked through CRM","actual"],["Positive / Neutral PR","90%","Coverage sentiment","actual"],["Budget Used","71%","AED 3.12M spent","actual"]]} /></Panel>
     <Panel title="Other Activity Summary" className="col-span-12"><DataTable columns={[{label:"Activity"},{label:"Primary Result",sortable:true},{label:"Commercial Outcome"},{label:"Spend",sortable:true},{label:"Management Reading"}]} rows={[["Events","74 confirmed meetings","AED 9.6M pipeline","AED 1.14M","Prioritise qualified follow-ups"],["PR & Media","142 mentions","90% positive / neutral","AED 624K","Maintain coverage quality"],["Branding","196 approved assets","82.4% approval rate","AED 792K","Turnaround averages 3.2 days"],["Markets & Terminals","42.8K relevant visits","286 enquiries","AED 560K","UAE is the fastest-growing market"]]} note="Other activities spend: AED 3.12M · 71% of allocated budget." /></Panel>
   </div>;
 }
