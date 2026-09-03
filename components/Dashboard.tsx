@@ -193,13 +193,13 @@ function ScaledValue({ children }: { children: string }) {
 }
 
 function KpiRow({ items }: { items: Kpi[] }) {
-  const { factor, filtered } = useContext(DashboardFilterContext);
-  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div><div className={`max-w-[88%] truncate text-[8px] font-semibold ${item.status === "actual" ? "text-[#52751b]" : "text-[#a44e0c]"}`}>{filtered ? "Filtered selection" : item.context}</div><span className={`absolute right-2 top-2 data-badge ${item.status}`}>Actual</span></article>)}</section>;
+  const { factor } = useContext(DashboardFilterContext);
+  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div></article>)}</section>;
 }
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
-  const { factor, filtered } = useContext(DashboardFilterContext);
-  return <div className="grid h-full grid-cols-2 gap-1.5 p-1.5">{rows.map(r => <div key={r[0]} className="metric-tile grid min-h-0 grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-2 rounded-[4px] border border-slate-200 border-l-[3px] border-l-noatum-blue bg-slate-50 px-3 py-1"><span className="truncate text-[12px] font-medium text-slate-600">{r[0]}</span><b className="whitespace-nowrap text-[16px] leading-none">{scaleDisplayValue(r[1], factor)}</b><small className={`metric-tile-context col-span-2 mt-1 truncate text-[10px] leading-none ${r[3] === "actual" ? "text-emerald-700" : "text-amber-700"}`}>{filtered ? "Filtered selection" : r[2]}</small></div>)}</div>;
+  const { factor } = useContext(DashboardFilterContext);
+  return <div className="grid h-full grid-cols-2 gap-1.5 p-1.5">{rows.map(r => <div key={r[0]} className="metric-tile grid min-h-0 grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-2 rounded-[4px] border border-slate-200 border-l-[3px] border-l-noatum-blue bg-slate-50 px-3 py-1"><span className="truncate text-[12px] font-medium text-slate-600">{r[0]}</span><b className="whitespace-nowrap text-[16px] leading-none">{scaleDisplayValue(r[1], factor)}</b></div>)}</div>;
 }
 
 function parseNumber(value: string) {
@@ -223,7 +223,7 @@ function DataTable({ columns, rows, note }: { columns: Column[]; rows: string[][
     if (!sort) return visibleRows;
     return [...visibleRows].sort((a, b) => (parseNumber(a[sort.index]) - parseNumber(b[sort.index])) * (sort.asc ? 1 : -1));
   }, [sort, visibleRows]);
-  return <div className="flex h-full min-h-0 flex-col"><div className="min-h-0 flex-1 overflow-auto"><table className="compact-table"><thead><tr>{columns.map((c, i) => <th key={c.label}>{c.sortable ? <button className="font-bold hover:text-noatum-blue" onClick={() => setSort({ index: i, asc: sort?.index === i ? !sort.asc : false })}>{c.label} ↕</button> : c.label}</th>)}</tr></thead><tbody>{sorted.map((row, i) => <tr key={`${row[0]}-${i}`}>{row.map((cell, j) => <td key={j} className={j === 0 ? "font-semibold" : ""}>{cell}</td>)}</tr>)}</tbody></table></div>{note && <div className="shrink-0 border-t bg-slate-50 px-2 py-1 text-[7px] text-slate-500">{filtered ? `Filtered proportional view · ${note}` : note}</div>}</div>;
+  return <div className="flex h-full min-h-0 flex-col"><div className="min-h-0 flex-1 overflow-auto"><table className="compact-table"><thead><tr>{columns.map((c, i) => <th key={c.label}>{c.sortable ? <button className="font-bold hover:text-noatum-blue" onClick={() => setSort({ index: i, asc: sort?.index === i ? !sort.asc : false })}>{c.label} ↕</button> : c.label}</th>)}</tr></thead><tbody>{sorted.map((row, i) => <tr key={`${row[0]}-${i}`}>{row.map((cell, j) => <td key={j} className={j === 0 ? "font-semibold" : ""}>{cell}</td>)}</tr>)}</tbody></table></div></div>;
 }
 
 function OverviewView() {
@@ -474,7 +474,6 @@ export default function Dashboard() {
     return () => window.removeEventListener("popstate", restoreFromUrl);
   }, []);
   const activeFilters = primaryFilters[active];
-  const status = "Live data through 20 Aug 2026";
   const selectedEntries = useMemo(() => Object.entries(activeFilters).filter(([label, options]) => (values[label] ?? options[0]) !== options[0]), [activeFilters, values]);
   const filterState = useMemo(() => {
     const selections = selectedEntries.map(([label, options]) => values[label] ?? options[0]);
@@ -542,7 +541,7 @@ export default function Dashboard() {
         <div className="ml-auto grid min-w-0 flex-1 grid-cols-[1.35fr_repeat(3,1fr)_150px] items-end gap-2">{Object.entries(activeFilters).slice(0,4).map(([label, options]) => <label key={`${active}-${label}`} className="min-w-0 text-white"><span className="mb-1 block truncate text-[10px] font-semibold">{label}</span><select aria-label={label} className="block h-[30px] w-full truncate border border-[#9BB2CE] bg-white px-2 text-[11px] font-semibold text-noatum-deep outline-none focus:border-noatum-lightBlue" value={values[label] ?? options[0]} onChange={e=>setFilter(label, e.target.value)}>{options.map(o=><option key={o}>{o}</option>)}</select></label>)}<div className="grid h-[30px] grid-cols-3 overflow-hidden border border-[#9BB2CE] bg-white text-[10px] font-bold text-noatum-deep"><button onClick={resetFilters} disabled={!filterState.filtered} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2] disabled:cursor-not-allowed disabled:opacity-45" title="Reset active filters">Reset</button><button onClick={exportCsv} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2]" title="Export active KPIs as CSV">CSV</button><button onClick={() => window.print()} className="hover:bg-[#edf0f2]" title="Print or save as PDF">Print</button></div></div>
       </div>
       <div className="flex h-[30px] items-start gap-4 px-5">
-        <p className="mr-auto flex items-center text-[11px] font-semibold"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-noatum-teal"/>Reporting Period (YTD) · May-26 to Aug-26 <span className="ml-3 text-[10px] font-normal text-white/65">{status}</span></p>
+        <p className="mr-auto flex items-center text-[11px] font-semibold"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-noatum-teal"/>Reporting Period (YTD) · May-26 to Aug-26</p>
         <nav className="dashboard-nav grid h-[30px] w-[56%] grid-cols-4 gap-2">{tabs.map(tab => <button key={tab} onClick={()=>selectTab(tab)} className={`truncate rounded-[2px] border px-3 text-[11px] font-semibold transition ${active===tab?"border-white bg-white text-noatum-deep":"border-white/10 bg-[#153b6a] text-white hover:bg-[#21578a]"}`}>{tab}</button>)}</nav>
       </div>
     </header>
