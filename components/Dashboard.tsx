@@ -6,7 +6,8 @@ import EChart from "./EChart";
 import { DashboardFilterContext } from "./DashboardFilterContext";
 import WorldTerminalMap from "./WorldTerminalMap";
 
-type TabId = "Overview" | "Digital" | "Social" | "Paid Media" | "Events" | "PR" | "Branding" | "Markets & Terminals" | "Budget & ROI" | "Reporting";
+type SectionId = "Overview" | "Digital" | "Social" | "Paid Media" | "Events" | "PR" | "Branding" | "Markets & Terminals" | "Budget & ROI" | "Reporting";
+type PrimaryTabId = "Overview" | "Digital Activities" | "Other Activities" | "Report";
 type Kpi = { label: string; value: string; context: string; icon: string; status: "actual" | "plan" };
 type Column = { label: string; sortable?: boolean };
 
@@ -25,20 +26,15 @@ function scaleDisplayValue(value: string, factor: number) {
   return `${match[1] ?? ""}${match[2] ?? ""}${formatted}${match[4] ?? ""}`;
 }
 
-const tabs: { id: TabId; short: string }[] = [
-  { id: "Overview", short: "Overview" },
-  { id: "Digital", short: "Digital" },
-  { id: "Social", short: "Social" },
-  { id: "Paid Media", short: "Paid Media" },
-  { id: "Events", short: "Events" },
-  { id: "PR", short: "PR" },
-  { id: "Branding", short: "Branding" },
-  { id: "Markets & Terminals", short: "Markets & Terminals" },
-  { id: "Budget & ROI", short: "Budget & ROI" },
-  { id: "Reporting", short: "Reporting" },
-];
+const tabs: PrimaryTabId[] = ["Overview", "Digital Activities", "Other Activities", "Report"];
+const primaryFilters: Record<PrimaryTabId, Record<string, string[]>> = {
+  Overview: { Period: ["May 1 – Aug 20, 2026"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], Terminal: ["All", "Safaga", "Luanda", "Karachi"] },
+  "Digital Activities": { Period: ["May 1 – Aug 20, 2026"], Channel: ["All", "Website & SEO", "Organic Social", "Paid Media"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], Terminal: ["All", "Safaga", "Luanda", "Karachi"] },
+  "Other Activities": { Period: ["May 1 – Aug 20, 2026"], Activity: ["All", "Events", "PR & Media", "Branding", "Markets & Terminals"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], Terminal: ["All", "Safaga", "Luanda", "Karachi"] },
+  Report: { Period: ["May 2026", "Q2 2026", "Year to date"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"], Terminal: ["All", "Safaga", "Luanda", "Karachi"] },
+};
 
-const filters: Record<TabId, Record<string, string[]>> = {
+const filters: Record<SectionId, Record<string, string[]>> = {
   Overview: {
     Date: ["May 1 – Aug 20, 2026"], Region: ["All", "Europe", "Middle East", "Africa", "South Asia"],
     Terminal: ["All", "Castellón", "Málaga", "Sagunto", "Santander", "Tarragona", "ATK", "Safaga", "Luanda", "Karachi"],
@@ -82,7 +78,7 @@ const filters: Record<TabId, Record<string, string[]>> = {
   },
 };
 
-const kpis: Record<TabId, Kpi[]> = {
+const kpis: Record<SectionId, Kpi[]> = {
   Overview: [
     { label: "Website Sessions", value: "12,946", context: "1.38 sessions per user", icon: "◎", status: "actual" },
     { label: "Organic Social Impressions", value: "453K", context: "106 posts published", icon: "in", status: "actual" },
@@ -146,16 +142,33 @@ const kpis: Record<TabId, Kpi[]> = {
   ],
 };
 
+const primaryKpis: Record<PrimaryTabId, Kpi[]> = {
+  Overview: kpis.Overview,
+  "Digital Activities": [
+    { label: "Website Sessions", value: "12,946", context: "47.6% from organic search", icon: "◎", status: "actual" },
+    { label: "Digital Enquiries", value: "382", context: "Website and paid media", icon: "+", status: "actual" },
+    { label: "Social Impressions", value: "453K", context: "106 posts published", icon: "in", status: "actual" },
+    { label: "Digital Spend", value: "AED 2.00M", context: "71% of allocation", icon: "AED", status: "actual" },
+  ],
+  "Other Activities": [
+    { label: "Confirmed Meetings", value: "74", context: "Events tracked via CRM", icon: "✓", status: "actual" },
+    { label: "Media Mentions", value: "142", context: "90% positive / neutral", icon: "◎", status: "actual" },
+    { label: "Approved Assets", value: "196", context: "82.4% approval rate", icon: "▣", status: "actual" },
+    { label: "Other Activities Spend", value: "AED 3.12M", context: "71% of allocation", icon: "AED", status: "actual" },
+  ],
+  Report: kpis.Reporting,
+};
+
 const baseText = { fontFamily: "Segoe UI, Arial", color: NAVY };
 const tooltip = { trigger: "axis" as const, backgroundColor: NAVY, borderWidth: 0, textStyle: { ...baseText, color: "#fff", fontSize: 10 } };
 
 function lineOption(series: { name: string; data: number[]; color: string }[], labels = ["May", "Jun", "Jul", "Aug"]): EChartsOption {
   return {
     animationDuration: 500, color: series.map(s => s.color), tooltip,
-    legend: { top: 2, left: 8, textStyle: { ...baseText, fontSize: 9 }, itemWidth: 12, itemHeight: 3 },
+    legend: { top: 2, left: 8, textStyle: { ...baseText, fontSize: 11 }, itemWidth: 12, itemHeight: 3 },
     grid: { left: 42, right: 16, top: 30, bottom: 25 },
-    xAxis: { type: "category", data: labels, boundaryGap: false, axisLine: { lineStyle: { color: "#cbd5e1" } }, axisLabel: { ...baseText, fontSize: 8 } },
-    yAxis: { type: "value", splitLine: { lineStyle: { color: "#edf1f5" } }, axisLabel: { ...baseText, fontSize: 8 } },
+    xAxis: { type: "category", data: labels, boundaryGap: false, axisLine: { lineStyle: { color: "#cbd5e1" } }, axisLabel: { ...baseText, fontSize: 11 } },
+    yAxis: { type: "value", splitLine: { lineStyle: { color: "#edf1f5" } }, axisLabel: { ...baseText, fontSize: 11 } },
     series: series.map(s => ({ name: s.name, type: "line", smooth: true, symbol: "circle", symbolSize: 4, lineStyle: { width: 2 }, areaStyle: { opacity: .04 }, data: s.data })),
   };
 }
@@ -165,8 +178,8 @@ function barOption(labels: string[], values: number[], suffix: string, highlight
     animationDuration: 450, tooltip: { ...tooltip, valueFormatter: (v) => `${v}${suffix}` },
     grid: { left: 116, right: 54, top: 6, bottom: 8 },
     xAxis: { type: "value", show: false },
-    yAxis: { type: "category", inverse: true, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { ...baseText, fontSize: barWidth < 10 ? 8 : 9, width: 108, overflow: "truncate", interval: barWidth < 10 ? 0 : "auto" } },
-    series: [{ type: "bar", data: values.map((v, i) => ({ value: v, itemStyle: { color: i === highlight ? TEAL : BLUE, borderRadius: 5 } })), barWidth, showBackground: true, backgroundStyle: { color: PALE, borderRadius: 5 }, label: { show: true, position: "right", formatter: `{c}${suffix}`, ...baseText, fontSize: 9, fontWeight: 700 } }],
+    yAxis: { type: "category", inverse: true, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { ...baseText, fontSize: 12, width: 108, overflow: "truncate", interval: barWidth < 10 ? 0 : "auto" } },
+    series: [{ type: "bar", data: values.map((v, i) => ({ value: v, itemStyle: { color: i === highlight ? TEAL : BLUE, borderRadius: 5 } })), barWidth, showBackground: true, backgroundStyle: { color: PALE, borderRadius: 5 }, label: { show: true, position: "right", formatter: `{c}${suffix}`, ...baseText, fontSize: 11, fontWeight: 700 } }],
   };
 }
 
@@ -186,7 +199,7 @@ function KpiRow({ items }: { items: Kpi[] }) {
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
   const { factor, filtered } = useContext(DashboardFilterContext);
-  return <div className="grid h-full grid-cols-2 gap-1.5 p-1.5">{rows.map(r => <div key={r[0]} className="metric-tile grid min-h-0 grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-2 rounded-[4px] border border-slate-200 border-l-[3px] border-l-noatum-blue bg-slate-50 px-3 py-1"><span className="truncate text-[8px] font-medium text-slate-500">{r[0]}</span><b className="whitespace-nowrap text-[15px] leading-none">{scaleDisplayValue(r[1], factor)}</b><small className={`metric-tile-context col-span-2 mt-0.5 truncate text-[7px] leading-none ${r[3] === "actual" ? "text-emerald-700" : "text-amber-700"}`}>{filtered ? "Filtered selection" : r[2]}</small></div>)}</div>;
+  return <div className="grid h-full grid-cols-2 gap-1.5 p-1.5">{rows.map(r => <div key={r[0]} className="metric-tile grid min-h-0 grid-cols-[minmax(0,1fr)_auto] content-center items-center gap-x-2 rounded-[4px] border border-slate-200 border-l-[3px] border-l-noatum-blue bg-slate-50 px-3 py-1"><span className="truncate text-[12px] font-medium text-slate-600">{r[0]}</span><b className="whitespace-nowrap text-[16px] leading-none">{scaleDisplayValue(r[1], factor)}</b><small className={`metric-tile-context col-span-2 mt-1 truncate text-[10px] leading-none ${r[3] === "actual" ? "text-emerald-700" : "text-amber-700"}`}>{filtered ? "Filtered selection" : r[2]}</small></div>)}</div>;
 }
 
 function parseNumber(value: string) {
@@ -222,13 +235,13 @@ function OverviewView() {
     ["Markets & Terminals", "Relevant Page Visits", "42.8K", "Actual", "Digital interest across terminal and service pages"],
     ["Budget & ROI", "Budget Used", "71%", "Actual", "AED 5.12M spent; AED 736K committed"],
   ];
-  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[0.8fr_0.8fr_1.6fr] gap-2">
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_auto] gap-2">
     <Panel title="Digital Performance" className="col-span-4"><MetricTiles rows={[["Sessions","12,946","GA4 actual","actual"],["Users","9,410","GA4 actual","actual"],["Organic Sessions","6,159","47.6% channel share","actual"],["Conversions / Enquiries","286","Conversion export missing","plan"]]} /></Panel>
     <Panel title="Organic Social Performance" className="col-span-4"><MetricTiles rows={[["Impressions","453K","Reported aggregate","actual"],["Engagement Rate","13.98%","Reported rate","actual"],["Posts Published","106","Reported aggregate","actual"],["Followers","12K","Current audience","actual"]]} /></Panel>
     <Panel title="Paid Media Performance" className="col-span-4"><MetricTiles rows={[["Ad Spend","AED 620K","Media spend to date","actual"],["Paid Impressions","3.8M","Delivered impressions","actual"],["Link CTR","1.84%","Click-through rate","actual"],["Attributed Enquiries","96","Attributed enquiries","actual"]]} /></Panel>
-    <Panel title="Event Conversion" className="col-span-4"><EChart option={{ tooltip, grid:{left:18,right:18,top:16,bottom:18}, xAxis:{type:"category",data:["Accounts","Meetings","Follow-ups","Opportunities"],axisLabel:{...baseText,fontSize:8}}, yAxis:{type:"value",show:false}, series:[{type:"bar",data:[286,74,38,18],barWidth:22,itemStyle:{color:BLUE,borderRadius:[4,4,0,0]},label:{show:true,position:"top",fontSize:9,fontWeight:700}}] }} /></Panel>
+    <Panel title="Event Conversion" className="col-span-4"><EChart option={{ tooltip, grid:{left:18,right:18,top:20,bottom:24}, xAxis:{type:"category",data:["Accounts","Meetings","Follow-ups","Opportunities"],axisLabel:{...baseText,fontSize:11}}, yAxis:{type:"value",show:false}, series:[{type:"bar",data:[286,74,38,18],barWidth:22,itemStyle:{color:BLUE,borderRadius:[4,4,0,0]},label:{show:true,position:"top",fontSize:11,fontWeight:700}}] }} /></Panel>
     <Panel title="Markets & Terminals · Digital Interest" className="col-span-4"><EChart option={barOption(["Spain","UAE","Egypt"],[22.4,6.8,5.7],"K",1)} /></Panel>
-    <Panel title="Budget & Commercial Influence" className="col-span-4"><div className="flex h-full flex-col justify-center p-2"><div className="mb-1 flex h-3 overflow-hidden rounded-full text-[6px] font-bold text-white"><span className="grid w-[71%] place-items-center bg-noatum-blue">Spent 71%</span><span className="grid w-[10%] place-items-center bg-noatum-teal">10%</span><span className="grid w-[19%] place-items-center bg-slate-400">19%</span></div><div className="grid grid-cols-2 gap-2"><div className="rounded border-l-[3px] border-noatum-blue bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Actual Spend<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 5.12M</ScaledValue></b></div><div className="rounded border-l-[3px] border-noatum-teal bg-slate-50 px-2 py-1 text-[7px] text-slate-500">Influenced Pipeline<b className="block text-[13px] text-noatum-deep"><ScaledValue>AED 34.4M</ScaledValue></b></div></div><p className="mt-1 text-[6px] text-amber-700">Pipeline / Spend 6.7x · not ROMI</p></div></Panel>
+    <Panel title="Budget & Commercial Influence" className="col-span-4"><div className="flex h-full flex-col justify-center p-2"><div className="mb-2 flex h-4 overflow-hidden rounded-full text-[9px] font-bold text-white"><span className="grid w-[71%] place-items-center bg-noatum-blue">Spent 71%</span><span className="grid w-[10%] place-items-center bg-noatum-teal">10%</span><span className="grid w-[19%] place-items-center bg-slate-400">19%</span></div><div className="grid grid-cols-2 gap-2"><div className="rounded border-l-[3px] border-noatum-blue bg-slate-50 px-2 py-1 text-[10px] text-slate-500">Actual Spend<b className="block text-[15px] text-noatum-deep"><ScaledValue>AED 5.12M</ScaledValue></b></div><div className="rounded border-l-[3px] border-noatum-teal bg-slate-50 px-2 py-1 text-[10px] text-slate-500">Influenced Pipeline<b className="block text-[15px] text-noatum-deep"><ScaledValue>AED 34.4M</ScaledValue></b></div></div><p className="mt-1 text-[9px] text-amber-700">Pipeline / Spend 6.7x · not ROMI</p></div></Panel>
     <Panel title="Management Performance Summary" className="col-span-12"><DataTable columns={[{label:"Area"},{label:"Primary KPI"},{label:"Current"},{label:"Data Status"},{label:"Management Reading"}]} rows={summary} /></Panel>
   </div>;
 }
@@ -356,17 +369,75 @@ function BudgetView() {
 }
 
 function ReportingView() {
-  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.15fr] gap-2">
-    <Panel title="Executive KPI Score" className="col-span-4"><MetricTiles rows={[["KPIs On Target","8 / 10","Executive scorecard","actual"],["Influenced Pipeline","AED 34.4M","CRM-attributed pipeline","actual"],["Qualified Opportunities","54","Sales-accepted opportunities","actual"],["Marketing Health","88 / 100","Cross-channel score","actual"]]} /></Panel>
-    <Panel title="Executive Marketing Scorecard" className="col-span-8"><EChart option={lineOption([{name:"Actual performance",data:[78,83,88,94],color:BLUE},{name:"Target",data:[78,84,88,94],color:TEAL}])} /></Panel>
-    <Panel title="Key Achievements" className="col-span-4"><EChart option={barOption(["Qualified enquiry growth","Pipeline influence","UAE interest growth","Coverage quality"],[18.7,34.4,24.8,90],"")} /></Panel>
-    <Panel title="Attention Needed" className="col-span-4"><div className="grid h-full grid-rows-4 p-2 text-[9px]">{[["Digital","Improve form attribution"],["Events","Convert event follow-ups"],["Markets","Expand account matching"],["Reporting","Review data confidence"]].map(r=><div key={r[1]} className="flex items-center gap-2 border-b"><span className="grid h-6 w-6 place-items-center rounded-full bg-blue-50 text-noatum-blue">!</span><span><b>{r[1]}</b><small className="block text-slate-500">{r[0]}</small></span></div>)}</div></Panel>
-    <Panel title="Management Funnel" className="col-span-4"><EChart option={{ series:[{type:"funnel",left:"10%",right:"10%",top:8,bottom:8,minSize:"35%",maxSize:"100%",sort:"descending",gap:2,label:{show:true,position:"inside",formatter:"{b}  {c}",color:"#fff",fontSize:9},data:[{name:"KPIs tracked",value:10,itemStyle:{color:BLUE}},{name:"On target",value:8,itemStyle:{color:"#247caf"}},{name:"Watch",value:2,itemStyle:{color:"#4c9abd"}},{name:"Critical",value:0,itemStyle:{color:"#9bbdce"}}]}] }} /></Panel>
-    <Panel title="Executive Snapshot" className="col-span-12"><DataTable columns={[{label:"Management KPI"},{label:"Current"},{label:"Target"},{label:"Status"}]} rows={[["Qualified opportunities","54","50","On target"],["Influenced pipeline","AED 34.4M","AED 32.0M","On target"],["Cost / qualified enquiry","AED 1,648","AED 1,800","On target"],["Positive / neutral coverage","90%","92%","Watch"],["Target-account engagement","64.2%","65.0%","Watch"]]} /></Panel>
+  const [mode, setMode] = useState<"report" | "raw" | "definitions">("report");
+  const months = ["May-26", "Jun-26", "Jul-26", "Aug-26"];
+  const rows = [
+    ["Digital Activities", "section", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Website Sessions", "metric", "3,010", "3,420", "2,580", "9,010", "3,936", "12,946", "3,100", "9,846", "3,100", "12,946", "12,500"],
+    ["Organic Search Share", "metric", "46.1%", "47.2%", "47.8%", "47.0%", "47.6%", "47.6%", "48.0%", "47.5%", "47.6%", "47.6%", "45.0%"],
+    ["Digital Enquiries", "metric", "78", "86", "91", "255", "127", "382", "96", "286", "96", "382", "350"],
+    ["Social Impressions", "metric", "96K", "108K", "121K", "325K", "128K", "453K", "106K", "347K", "106K", "453K", "420K"],
+    ["Paid Media Spend", "metric", "AED 120K", "AED 145K", "AED 165K", "AED 430K", "AED 190K", "AED 620K", "AED 150K", "AED 470K", "AED 150K", "AED 620K", "AED 650K"],
+    ["Digital Budget Used", "highlight", "61%", "65%", "68%", "68%", "71%", "71%", "70%", "70%", "71%", "71%", "75%"],
+    ["Other Activities", "section", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Confirmed Event Meetings", "metric", "14", "17", "19", "50", "24", "74", "18", "56", "18", "74", "70"],
+    ["Qualified Follow-ups", "metric", "8", "9", "10", "27", "11", "38", "9", "29", "9", "38", "40"],
+    ["Media Mentions", "metric", "28", "34", "38", "100", "42", "142", "33", "109", "33", "142", "135"],
+    ["Positive / Neutral Coverage", "metric", "88%", "89%", "91%", "89%", "90%", "90%", "90%", "90%", "90%", "90%", "92%"],
+    ["Approved Brand Assets", "metric", "41", "48", "52", "141", "55", "196", "49", "147", "49", "196", "180"],
+    ["Terminal & Service Visits", "metric", "9.8K", "10.4K", "10.9K", "31.1K", "11.7K", "42.8K", "10.7K", "32.1K", "10.7K", "42.8K", "40.0K"],
+    ["Other Activities Budget Used", "highlight", "63%", "66%", "69%", "69%", "71%", "71%", "70%", "70%", "71%", "71%", "75%"],
+    ["Commercial Performance", "section", "", "", "", "", "", "", "", "", "", "", ""],
+    ["Qualified Opportunities", "metric", "10", "13", "14", "37", "17", "54", "13", "41", "13", "54", "50"],
+    ["Influenced Pipeline", "highlight", "AED 6.8M", "AED 8.2M", "AED 9.1M", "AED 24.1M", "AED 10.3M", "AED 34.4M", "AED 8.6M", "AED 25.8M", "AED 8.6M", "AED 34.4M", "AED 32.0M"],
+  ];
+  if (mode === "definitions") return <div className="panel h-full overflow-auto p-5 text-[12px]"><div className="mb-4 flex justify-between"><b className="text-[16px]">KPI Definitions</b><button onClick={()=>setMode("report")} className="rounded bg-noatum-blue px-5 py-1.5 text-[12px] font-bold text-white">Performance Report</button></div>{rows.filter(row=>row[1]==="metric"||row[1]==="highlight").map(row=><div key={row[0]} className="grid grid-cols-[240px_1fr] border-b py-3"><b>{row[0]}</b><span className="text-slate-600">Reported result for the selected period, calculated from connected marketing, communications and CRM sources.</span></div>)}</div>;
+  return <div className="flex h-full min-h-0 flex-col bg-white">
+    <div className="flex h-14 shrink-0 items-center border-b border-[#9bb2ce] bg-[#f7fafc] px-4 text-[12px]"><span className="mr-3 h-8 w-1 rounded-full bg-noatum-teal"/><div><b className="block text-[14px] text-noatum-deep">Marketing Performance Report</b><span className="text-[12px] text-slate-500">Reporting Period (YTD) · May-26 to Aug-26</span></div><div className="ml-auto flex gap-1.5"><button onClick={()=>setMode("report")} className={`rounded px-5 py-1.5 font-bold ${mode==="report"?"bg-noatum-blue text-white":"border border-noatum-teal bg-white text-noatum-deep"}`}>Performance Report</button><button onClick={()=>setMode("raw")} className={`rounded px-5 py-1.5 font-bold ${mode==="raw"?"bg-noatum-blue text-white":"border border-noatum-teal bg-white text-noatum-deep"}`}>Raw Data</button><button onClick={()=>setMode("definitions")} className="rounded border border-noatum-teal bg-white px-5 py-1.5 font-bold text-noatum-deep">Definitions</button></div></div>
+    <div className="min-h-0 flex-1 overflow-auto px-4 py-2">
+      <table className="w-full min-w-[1500px] table-fixed border-separate border-spacing-0 text-[12px] leading-tight text-noatum-deep">
+        <colgroup><col className="w-[18%]" />{Array.from({length:11},(_,index)=><col key={index} className="w-[7.45%]" />)}</colgroup>
+        <thead className="sticky top-0 z-20 text-[12px]"><tr><th rowSpan={2} className="sticky left-0 z-30 border border-[#b9c9d8] bg-[#dce8f2] px-3 text-left text-noatum-deep">Marketing Performance KPI</th>{months.map(month=><th key={month} colSpan={2} className="border border-[#b9c9d8] bg-[#dce8f2] px-2 py-2 text-left text-noatum-deep">{month}</th>)}<th colSpan={2} className="border border-[#9bb2ce] bg-[#c8d9e8] px-2 py-2 text-left text-noatum-deep">YTD</th><th rowSpan={2} className="border border-[#9bb2ce] bg-[#c8d9e8] px-2 text-noatum-deep">Target</th></tr><tr>{[...months,"YTD"].flatMap(month=>[<th key={`${month}-m`} className="border border-[#c7d4df] bg-[#edf3f7] px-3 py-1.5 text-noatum-deep">MTD</th>,<th key={`${month}-y`} className="border border-[#c7d4df] bg-[#edf3f7] px-3 py-1.5 text-noatum-deep">YTD</th>])}</tr></thead>
+        <tbody>{rows.map((row,index)=>{const section=row[1]==="section";const highlight=row[1]==="highlight";const brandedRow=section?"bg-noatum-navy font-bold text-white":highlight?"bg-noatum-blue font-bold text-white":index%2?"bg-[#f3f6f8]":"bg-white";const brandedSticky=section?"bg-noatum-navy":highlight?"bg-noatum-blue":"bg-inherit";return <tr key={`${row[0]}-${index}`} className={brandedRow}><td className={`sticky left-0 z-10 border-b border-r border-[#c7d4df] px-3 py-1.5 font-semibold ${brandedSticky}`}>{row[0]}</td>{row.slice(2).map((cell,cellIndex)=><td key={cellIndex} className="min-w-[82px] border-b border-r border-[#c7d4df] px-3 py-1.5 text-right">{mode==="raw"&&!section?String(cell).replace(/AED |K|M|%/g,""):cell}</td>)}</tr>})}</tbody>
+      </table>
+    </div>
+    <div className="h-8 shrink-0 border-t border-[#d6e1e8] bg-[#f5f7f8] px-4 pt-1.5 text-[12px] italic text-slate-500">⟳ Refresh date: 20 Aug 2026 · 10:05 AM</div>
   </div>;
 }
 
-function ActiveView({ tab }: { tab: TabId }) {
+function ActivityBudgetView({ kind }: { kind: "digital" | "other" }) {
+  const digital = kind === "digital";
+  const labels = digital ? ["Paid Media", "Website & SEO", "Organic Social", "Marketing Technology"] : ["Events", "PR & Media", "Branding", "Markets & Terminals"];
+  const spend = digital ? [620, 540, 360, 480] : [1144, 624, 792, 560];
+  const rows = labels.map((label, index) => [label, `AED ${(spend[index] / .71).toFixed(0)}K`, `AED ${spend[index]}K`, "71%", index === 0 ? "On plan" : "Monitor"]);
+  const total = spend.reduce((sum, value) => sum + value, 0);
+  const allocation = total / .71;
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.3fr] gap-2">
+    <Panel title={`${digital ? "Digital" : "Other Activities"} Budget Status`} className="col-span-5 row-span-2"><MetricTiles rows={[["Actual Spend",`AED ${(total / 1000).toFixed(2)}M`,"71% of allocated budget","actual"],["Committed",`AED ${Math.round(allocation * .10)}K`,"10% approved commitments","actual"],["Available",`AED ${Math.round(allocation * .19)}K`,"19% remaining allocation","actual"],["Budget Used","71%","Current reporting period","actual"]]} /></Panel>
+    <Panel title="Spend by Activity · AED K" className="col-span-7 row-span-2"><EChart option={barOption(labels, spend, "K", 0)} /></Panel>
+    <Panel title={`${digital ? "Digital" : "Other Activities"} Budget Detail`} className="col-span-12"><DataTable columns={[{label:"Activity"},{label:"Budget",sortable:true},{label:"Actual Spend",sortable:true},{label:"Budget Used",sortable:true},{label:"Status"}]} rows={rows} note="Activity allocation shown separately; consolidated budget remains available in Report." /></Panel>
+  </div>;
+}
+
+function DigitalActivitiesView() {
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.25fr] gap-2">
+    <Panel title="Digital Performance Trend" className="col-span-7 row-span-2"><EChart option={lineOption([{name:"Website sessions",data:[2580,3010,3420,3936],color:BLUE},{name:"Social engagement",data:[2140,2860,3540,5300],color:TEAL}])} /></Panel>
+    <Panel title="Channel Contribution" className="col-span-5"><EChart option={barOption(["Organic Search","Direct","Paid Media","Organic Social"],[47.6,46.2,4.8,1.4],"%",0)} /></Panel>
+    <Panel title="Digital Budget · AED K" className="col-span-5"><EChart option={barOption(["Paid Media","Website & SEO","Organic Social","Technology"],[620,540,360,480],"K",0)} /></Panel>
+    <Panel title="Digital Activity Summary" className="col-span-12"><DataTable columns={[{label:"Activity"},{label:"Primary Result",sortable:true},{label:"Outcome"},{label:"Spend",sortable:true},{label:"Management Reading"}]} rows={[["Website & SEO","12,946 sessions","286 enquiries","AED 540K","Organic search drives 47.6% of traffic"],["Organic Social","453K impressions","5.3K engagements","AED 360K","Video is the strongest content type"],["Paid Media","3.8M impressions","96 enquiries","AED 620K","Cost per enquiry averages AED 6.46K"],["Marketing Technology","Conversion tracking live","Improved attribution","AED 480K","Continue data-quality improvements"]]} note="Digital spend: AED 2.00M · 71% of allocated digital budget." /></Panel>
+  </div>;
+}
+
+function OtherActivitiesView() {
+  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.25fr] gap-2">
+    <Panel title="Activity Outcomes" className="col-span-7 row-span-2"><EChart option={barOption(["Events · meetings","PR · mentions","Branding · approved assets","Markets · enquiries"],[74,142,196,286],"",1)} /></Panel>
+    <Panel title="Other Activities Budget · AED K" className="col-span-5"><EChart option={barOption(["Events","PR & Media","Branding","Markets & Terminals"],[1144,624,792,560],"K",0)} /></Panel>
+    <Panel title="Commercial Influence" className="col-span-5"><MetricTiles rows={[["Influenced Pipeline","AED 18.0M","Activity-associated value","actual"],["Confirmed Meetings","74","Tracked through CRM","actual"],["Positive / Neutral PR","90%","Coverage sentiment","actual"],["Budget Used","71%","AED 3.12M spent","actual"]]} /></Panel>
+    <Panel title="Other Activity Summary" className="col-span-12"><DataTable columns={[{label:"Activity"},{label:"Primary Result",sortable:true},{label:"Commercial Outcome"},{label:"Spend",sortable:true},{label:"Management Reading"}]} rows={[["Events","74 confirmed meetings","AED 9.6M pipeline","AED 1.14M","Prioritise qualified follow-ups"],["PR & Media","142 mentions","90% positive / neutral","AED 624K","Maintain coverage quality"],["Branding","196 approved assets","82.4% approval rate","AED 792K","Turnaround averages 3.2 days"],["Markets & Terminals","42.8K relevant visits","286 enquiries","AED 560K","UAE is the fastest-growing market"]]} note="Other activities spend: AED 3.12M · 71% of allocated budget." /></Panel>
+  </div>;
+}
+
+function ActiveView({ tab }: { tab: SectionId }) {
   if (tab === "Overview") return <OverviewView />;
   if (tab === "Digital") return <DigitalView />;
   if (tab === "Social") return <SocialView />;
@@ -380,18 +451,18 @@ function ActiveView({ tab }: { tab: TabId }) {
 }
 
 export default function Dashboard() {
-  const [active, setActive] = useState<TabId>("Overview");
+  const [active, setActive] = useState<PrimaryTabId>("Overview");
   const [values, setValues] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState("");
+  const activeKpis = primaryKpis[active];
 
   useEffect(() => {
     function restoreFromUrl() {
       const params = new URLSearchParams(window.location.search);
       const requested = params.get("view");
-      const matched = tabs.find(({ id }) => id.toLowerCase() === requested?.toLowerCase());
-      const nextTab = matched?.id ?? "Overview";
+      const nextTab = tabs.find(tab => tab.toLowerCase() === requested?.toLowerCase()) ?? "Overview";
       const restored: Record<string, string> = {};
-      Object.entries(filters[nextTab]).forEach(([label, options]) => {
+      Object.entries(primaryFilters[nextTab]).forEach(([label, options]) => {
         const requestedValue = params.get(`filter.${label}`);
         if (requestedValue && options.includes(requestedValue)) restored[label] = requestedValue;
       });
@@ -402,7 +473,7 @@ export default function Dashboard() {
     window.addEventListener("popstate", restoreFromUrl);
     return () => window.removeEventListener("popstate", restoreFromUrl);
   }, []);
-  const activeFilters = filters[active];
+  const activeFilters = primaryFilters[active];
   const status = "Live data through 20 Aug 2026";
   const selectedEntries = useMemo(() => Object.entries(activeFilters).filter(([label, options]) => (values[label] ?? options[0]) !== options[0]), [activeFilters, values]);
   const filterState = useMemo(() => {
@@ -414,17 +485,17 @@ export default function Dashboard() {
     return { filtered: selections.length > 0, selections, factor: Math.max(.12, Math.min(1, factor)) };
   }, [selectedEntries, values]);
 
-  function updateUrl(tab: TabId, nextValues: Record<string, string>, mode: "push" | "replace") {
+  function updateUrl(tab: PrimaryTabId, nextValues: Record<string, string>, mode: "push" | "replace") {
     const params = new URLSearchParams();
     params.set("view", tab);
-    Object.entries(filters[tab]).forEach(([label, options]) => {
+    Object.entries(primaryFilters[tab]).forEach(([label, options]) => {
       const value = nextValues[label] ?? options[0];
       if (value !== options[0]) params.set(`filter.${label}`, value);
     });
     window.history[mode === "push" ? "pushState" : "replaceState"]({}, "", `?${params.toString()}`);
   }
 
-  function selectTab(tab: TabId) {
+  function selectTab(tab: PrimaryTabId) {
     setActive(tab);
     setValues({});
     setNotice("");
@@ -451,7 +522,7 @@ export default function Dashboard() {
       ...Object.entries(activeFilters).map(([label, options]) => [label, values[label] ?? options[0]]),
       [],
       ["KPI", "Value", "Data status", "Context"],
-      ...kpis[active].map(kpi => [kpi.label, scaleDisplayValue(kpi.value, filterState.factor), "Actual", filterState.filtered ? "Filtered proportional view" : kpi.context]),
+      ...activeKpis.map(kpi => [kpi.label, scaleDisplayValue(kpi.value, filterState.factor), "Actual", filterState.filtered ? "Filtered proportional view" : kpi.context]),
     ];
     const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
     const link = document.createElement("a");
@@ -464,18 +535,21 @@ export default function Dashboard() {
   }
 
   return <div className="dashboard-shell flex h-screen min-h-[540px] flex-col overflow-hidden bg-noatum-mist">
-    <header className="dashboard-header h-[92px] shrink-0 bg-noatum-navy text-white shadow-card">
-      <div className="dashboard-header-top flex h-[58px] items-center gap-4 px-5">
-        <div className="w-[270px] shrink-0 border-r border-white/30 pr-5"><img src="/noatum-logo.svg" alt="Noatum Ports" className="w-[205px]" /></div>
-        <div className="w-[315px] min-w-[220px]"><h1 className="truncate text-[16px] font-bold leading-tight">{active === "Overview" ? "Marketing & Communications" : active}</h1><p className="text-[10px] font-semibold text-noatum-paleBlue">Performance Dashboard</p><p className="mt-0.5 truncate text-[7px] text-white/70"><span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-noatum-green"/>{status}</p></div>
-        <div className="ml-auto grid min-w-0 flex-1 grid-cols-[1.35fr_repeat(4,1fr)_132px] items-end gap-2">{Object.entries(activeFilters).slice(0,5).map(([label, options]) => <label key={`${active}-${label}`} className="min-w-0 text-white"><span className="mb-0.5 block truncate text-[7px] font-semibold">{label}</span><select aria-label={label} className="block h-[27px] w-full truncate rounded-[3px] border border-[#9BB2CE] bg-white px-2 text-[8px] font-semibold text-noatum-deep outline-none focus:border-noatum-lightBlue" value={values[label] ?? options[0]} onChange={e=>setFilter(label, e.target.value)}>{options.map(o=><option key={o}>{o}</option>)}</select></label>)}<div className="grid h-[27px] grid-cols-3 overflow-hidden rounded-[3px] border border-[#9BB2CE] bg-white text-[7px] font-bold text-noatum-deep"><button onClick={resetFilters} disabled={!filterState.filtered} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2] disabled:cursor-not-allowed disabled:opacity-45" title="Reset active filters">Reset</button><button onClick={exportCsv} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2]" title="Export active KPIs as CSV">CSV</button><button onClick={() => window.print()} className="hover:bg-[#edf0f2]" title="Print or save as PDF">Print</button></div></div>
+    <header className="dashboard-header h-[135px] shrink-0 bg-noatum-navy text-white shadow-card">
+      <div className="dashboard-header-top flex h-[62px] items-center gap-4 px-5">
+        <div className="flex h-10 w-[320px] shrink-0 items-center border-r border-white/55 pr-5"><img src="/noatum-logo.svg" alt="Noatum Ports" className="w-[210px]" /></div>
+        <div className="w-[350px] min-w-[300px]"><h1 className="whitespace-nowrap text-[17px] font-semibold leading-tight">Marketing &amp; Communications Dashboard</h1><p className="mt-1 text-[12px] text-white">Performance Report</p></div>
+        <div className="ml-auto grid min-w-0 flex-1 grid-cols-[1.35fr_repeat(3,1fr)_150px] items-end gap-2">{Object.entries(activeFilters).slice(0,4).map(([label, options]) => <label key={`${active}-${label}`} className="min-w-0 text-white"><span className="mb-1 block truncate text-[10px] font-semibold">{label}</span><select aria-label={label} className="block h-[30px] w-full truncate border border-[#9BB2CE] bg-white px-2 text-[11px] font-semibold text-noatum-deep outline-none focus:border-noatum-lightBlue" value={values[label] ?? options[0]} onChange={e=>setFilter(label, e.target.value)}>{options.map(o=><option key={o}>{o}</option>)}</select></label>)}<div className="grid h-[30px] grid-cols-3 overflow-hidden border border-[#9BB2CE] bg-white text-[10px] font-bold text-noatum-deep"><button onClick={resetFilters} disabled={!filterState.filtered} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2] disabled:cursor-not-allowed disabled:opacity-45" title="Reset active filters">Reset</button><button onClick={exportCsv} className="border-r border-[#d8dcdf] hover:bg-[#edf0f2]" title="Export active KPIs as CSV">CSV</button><button onClick={() => window.print()} className="hover:bg-[#edf0f2]" title="Print or save as PDF">Print</button></div></div>
       </div>
-      <nav className="dashboard-nav ml-[410px] grid h-[34px] grid-cols-10 px-3">{tabs.map(tab => <button key={tab.id} onClick={()=>selectTab(tab.id)} className={`truncate border-b-[3px] px-2 text-[9px] font-semibold transition ${active===tab.id?"border-white bg-white text-noatum-deep":"border-transparent text-white/85 hover:bg-white/10 hover:text-white"}`}>{tab.short}</button>)}</nav>
+      <div className="flex h-[30px] items-start gap-4 px-5">
+        <p className="mr-auto flex items-center text-[11px] font-semibold"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-noatum-teal"/>Reporting Period (YTD) · May-26 to Aug-26 <span className="ml-3 text-[10px] font-normal text-white/65">{status}</span></p>
+        <nav className="dashboard-nav grid h-[30px] w-[56%] grid-cols-4 gap-2">{tabs.map(tab => <button key={tab} onClick={()=>selectTab(tab)} className={`truncate rounded-[2px] border px-3 text-[11px] font-semibold transition ${active===tab?"border-white bg-white text-noatum-deep":"border-white/10 bg-[#153b6a] text-white hover:bg-[#21578a]"}`}>{tab}</button>)}</nav>
+      </div>
     </header>
-    <main className="dashboard-main grid min-h-0 flex-1 grid-rows-[86px_minmax(0,1fr)] gap-2 p-2">
+    <main className={`dashboard-main relative grid min-h-0 flex-1 ${active === "Report" ? "grid-rows-[minmax(0,1fr)] bg-white p-0" : "z-10 -mt-[31px] grid-rows-[86px_minmax(0,1fr)] gap-2 px-2 pb-2"}`}>
       <DashboardFilterContext.Provider value={filterState}>
-        <KpiRow items={kpis[active]} />
-        <div className="min-h-0"><ActiveView tab={active} /></div>
+        {active !== "Report" && <KpiRow items={activeKpis} />}
+        <div className="min-h-0">{active === "Overview" ? <OverviewView /> : active === "Digital Activities" ? <DigitalActivitiesView /> : active === "Other Activities" ? <OtherActivitiesView /> : <ReportingView />}</div>
       </DashboardFilterContext.Provider>
       <span aria-live="polite" className="sr-only">{notice || (filterState.filtered ? `Active filters: ${selectedEntries.map(([label, options]) => `${label}: ${values[label] ?? options[0]}`).join(" · ")}. Proportional filtered view.` : "Dashboard ready.")}</span>
     </main>

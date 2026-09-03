@@ -22,14 +22,14 @@ button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline
     @apply min-h-0 overflow-hidden rounded-[4px] border border-[#c7cdd1] bg-white shadow-card;
   }
   .panel-title {
-    @apply flex h-8 shrink-0 items-center border-b border-[#d8dcdf] px-3 text-[11px] font-bold text-noatum-deep;
+    @apply flex h-8 shrink-0 items-center border-b border-[#d8dcdf] px-3 text-[12px] font-bold text-noatum-deep;
   }
   .chart-fill { @apply h-full min-h-0 w-full; }
   .data-badge { @apply rounded-full px-2 py-0.5 text-[9px] font-bold; }
   .data-badge.actual { @apply bg-[#edf4e3] text-[#52751b]; }
   .data-badge.plan { @apply bg-[#fff5df] text-[#a44e0c]; }
-  .compact-table { @apply w-full table-fixed border-collapse text-[9px]; }
-  .compact-table th { @apply bg-[#edf0f2] px-2 py-1.5 text-left text-[8px] uppercase text-[#50657d]; }
+  .compact-table { @apply w-full table-fixed border-collapse text-[11px]; }
+  .compact-table th { @apply bg-[#edf0f2] px-2 py-1.5 text-left text-[10px] uppercase text-[#50657d]; }
   .compact-table td { @apply border-t border-[#e3e6e8] px-2 py-1.5; }
   .compact-table th:not(:first-child), .compact-table td:not(:first-child) { @apply text-right; }
 }
@@ -37,9 +37,9 @@ button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline
 .echarts-for-react, canvas { outline: none; }
 
 @media (max-height: 720px) {
-  .panel-title { height: 26px; font-size: 10px; }
-  .compact-table { font-size: 8px; }
-  .compact-table th { font-size: 7px; padding-top: 3px; padding-bottom: 3px; }
+  .panel-title { height: 28px; font-size: 12px; }
+  .compact-table { font-size: 10px; }
+  .compact-table th { font-size: 10px; padding-top: 3px; padding-bottom: 3px; }
   .compact-table td { padding-top: 3px; padding-bottom: 3px; }
 }
 
