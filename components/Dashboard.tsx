@@ -8,7 +8,7 @@ import WorldTerminalMap from "./WorldTerminalMap";
 
 type SectionId = "Overview" | "Digital" | "Social" | "Paid Media" | "Events" | "PR" | "Branding" | "Markets & Terminals" | "Budget & ROI" | "Reporting";
 type PrimaryTabId = "Overview" | "Digital Activities" | "Other Activities" | "Report";
-type Kpi = { label: string; value: string; context: string; icon: string; status: "actual" | "plan" };
+type Kpi = { label: string; value: string; context: string; comparison?: string; icon: string; status: "actual" | "plan" };
 type Column = { label: string; sortable?: boolean };
 
 const BLUE = "#21578A";
@@ -80,11 +80,11 @@ const filters: Record<SectionId, Record<string, string[]>> = {
 
 const kpis: Record<SectionId, Kpi[]> = {
   Overview: [
-    { label: "Website Sessions", value: "12,946", context: "1.38 sessions per user", icon: "◎", status: "actual" },
-    { label: "Organic Social Impressions", value: "453K", context: "106 posts published", icon: "in", status: "actual" },
-    { label: "Paid Media Enquiries", value: "96", context: "AED 620K media spend", icon: "+", status: "actual" },
-    { label: "Confirmed Meetings", value: "74", context: "Tracked via CRM", icon: "✓", status: "actual" },
-    { label: "Budget Used", value: "71%", context: "AED 5.12M of AED 7.20M", icon: "%", status: "actual" },
+    { label: "Website Sessions", value: "12,946", context: "1.38 sessions per user", comparison: "+15.1% vs last month", icon: "◎", status: "actual" },
+    { label: "Organic Social Impressions", value: "453K", context: "106 posts published", comparison: "+5.8% vs last month", icon: "in", status: "actual" },
+    { label: "Paid Media Enquiries", value: "96", context: "AED 620K media spend", comparison: "+39.6% vs last month", icon: "+", status: "actual" },
+    { label: "Confirmed Meetings", value: "74", context: "Tracked via CRM", comparison: "+26.3% vs last month", icon: "✓", status: "actual" },
+    { label: "Budget Used", value: "71%", context: "AED 5.12M of AED 7.20M", comparison: "+2.0 pp vs last month", icon: "%", status: "actual" },
   ],
   Digital: [
     { label: "Sessions", value: "12,946", context: "1.38 sessions per user", icon: "◎", status: "actual" },
@@ -135,26 +135,26 @@ const kpis: Record<SectionId, Kpi[]> = {
     { label: "Pipeline / Spend", value: "6.7x", context: "Not ROMI", icon: "x", status: "actual" },
   ],
   Reporting: [
-    { label: "KPIs On Target", value: "8 / 10", context: "Monthly executive scorecard", icon: "✓", status: "actual" },
-    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Marketing-associated value", icon: "AED", status: "actual" },
-    { label: "Qualified Opportunities", value: "54", context: "Sales-accepted opportunities", icon: "+", status: "actual" },
-    { label: "Marketing Health", value: "88 / 100", context: "Cross-channel score", icon: "★", status: "actual" },
+    { label: "KPIs On Target", value: "8 / 10", context: "Monthly executive scorecard", comparison: "+1 KPI vs last month", icon: "✓", status: "actual" },
+    { label: "Influenced Pipeline", value: "AED 34.4M", context: "Marketing-associated value", comparison: "+11.0% vs last month", icon: "AED", status: "actual" },
+    { label: "Qualified Opportunities", value: "54", context: "Sales-accepted opportunities", comparison: "+21.4% vs last month", icon: "+", status: "actual" },
+    { label: "Marketing Health", value: "88 / 100", context: "Cross-channel score", comparison: "+4 pts vs last month", icon: "★", status: "actual" },
   ],
 };
 
 const primaryKpis: Record<PrimaryTabId, Kpi[]> = {
   Overview: kpis.Overview,
   "Digital Activities": [
-    { label: "Website Sessions", value: "12,946", context: "47.6% from organic search", icon: "◎", status: "actual" },
-    { label: "Digital Enquiries", value: "382", context: "Website and paid media", icon: "+", status: "actual" },
-    { label: "Social Impressions", value: "453K", context: "106 posts published", icon: "in", status: "actual" },
-    { label: "Digital Spend", value: "AED 2.00M", context: "71% of allocation", icon: "AED", status: "actual" },
+    { label: "Website Sessions", value: "12,946", context: "47.6% from organic search", comparison: "+15.1% vs last month", icon: "◎", status: "actual" },
+    { label: "Digital Enquiries", value: "382", context: "Website and paid media", comparison: "+39.6% vs last month", icon: "+", status: "actual" },
+    { label: "Social Impressions", value: "453K", context: "106 posts published", comparison: "+5.8% vs last month", icon: "in", status: "actual" },
+    { label: "Digital Spend", value: "AED 2.00M", context: "71% of allocation", comparison: "+15.2% vs last month", icon: "AED", status: "actual" },
   ],
   "Other Activities": [
-    { label: "Confirmed Meetings", value: "74", context: "Events tracked via CRM", icon: "✓", status: "actual" },
-    { label: "Media Mentions", value: "142", context: "90% positive / neutral", icon: "◎", status: "actual" },
-    { label: "Approved Assets", value: "196", context: "82.4% approval rate", icon: "▣", status: "actual" },
-    { label: "Other Activities Spend", value: "AED 3.12M", context: "71% of allocation", icon: "AED", status: "actual" },
+    { label: "Confirmed Meetings", value: "74", context: "Events tracked via CRM", comparison: "+26.3% vs last month", icon: "✓", status: "actual" },
+    { label: "Media Mentions", value: "142", context: "90% positive / neutral", comparison: "+10.5% vs last month", icon: "◎", status: "actual" },
+    { label: "Approved Assets", value: "196", context: "82.4% approval rate", comparison: "+5.8% vs last month", icon: "▣", status: "actual" },
+    { label: "Other Activities Spend", value: "AED 3.12M", context: "71% of allocation", comparison: "+12.7% vs last month", icon: "AED", status: "actual" },
   ],
   Report: kpis.Reporting,
 };
@@ -194,7 +194,7 @@ function ScaledValue({ children }: { children: string }) {
 
 function KpiRow({ items }: { items: Kpi[] }) {
   const { factor } = useContext(DashboardFilterContext);
-  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div></article>)}</section>;
+  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-[78%] truncate text-[10px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[21px] font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div>{item.comparison && <div className="truncate text-[9px] font-semibold text-emerald-700">{item.comparison}</div>}</article>)}</section>;
 }
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
