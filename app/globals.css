@@ -44,7 +44,7 @@ button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline
 }
 
 @media (max-height: 620px) {
-  .dashboard-header { height: 72px; }
+  .dashboard-header { height: 117px; }
   .dashboard-header-top { height: 44px; }
   .dashboard-nav { height: 28px; }
   .dashboard-main { grid-template-rows: 92px minmax(0, 1fr); }
