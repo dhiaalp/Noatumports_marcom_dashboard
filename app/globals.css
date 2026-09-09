@@ -52,6 +52,11 @@ button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline
   .metric-tile { padding-top: 2px; padding-bottom: 2px; }
 }
 
+.management-summary .panel-title { height: 36px; font-size: 16px; }
+.management-summary .compact-table { font-size: 14px; }
+.management-summary .compact-table th { font-size: 12px; padding-top: 8px; padding-bottom: 8px; }
+.management-summary .compact-table td { padding-top: 8px; padding-bottom: 8px; }
+
 @media (max-width: 900px) {
   body { overflow: auto; }
 }
