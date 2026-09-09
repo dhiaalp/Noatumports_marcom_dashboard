@@ -83,7 +83,7 @@ const kpis: Record<SectionId, Kpi[]> = {
     { label: "Website Sessions", value: "12,946", context: "1.38 sessions per user", comparison: "+15.1% vs last month", icon: "◎", status: "actual" },
     { label: "Organic Social Impressions", value: "453K", context: "106 posts published", comparison: "+5.8% vs last month", icon: "in", status: "actual" },
     { label: "Paid Media Enquiries", value: "96", context: "AED 620K media spend", comparison: "+39.6% vs last month", icon: "+", status: "actual" },
-    { label: "Confirmed Meetings", value: "74", context: "Tracked via CRM", comparison: "+26.3% vs last month", icon: "✓", status: "actual" },
+    { label: "Event Leads", value: "38", context: "Qualified event follow-ups", icon: "+", status: "actual" },
     { label: "Budget Used", value: "71%", context: "AED 5.12M of AED 7.20M", comparison: "+2.0 pp vs last month", icon: "%", status: "actual" },
   ],
   Digital: [
@@ -106,9 +106,7 @@ const kpis: Record<SectionId, Kpi[]> = {
   ],
   Events: [
     { label: "Events", value: "5", context: "Reporting period", icon: "▣", status: "actual" },
-    { label: "Target Accounts", value: "286", context: "Accounts targeted", icon: "◎", status: "actual" },
-    { label: "Confirmed Meetings", value: "74", context: "25.9% of target accounts", icon: "✓", status: "actual" },
-    { label: "Pipeline", value: "AED 9.6M", context: "CRM-attributed pipeline", icon: "AED", status: "actual" },
+    { label: "Event Leads", value: "38", context: "Qualified event follow-ups", icon: "+", status: "actual" },
   ],
   PR: [
     { label: "Press Releases Published", value: "9", context: "Published this period", icon: "▣", status: "actual" },
@@ -151,7 +149,7 @@ const primaryKpis: Record<PrimaryTabId, Kpi[]> = {
     { label: "Digital Spend", value: "AED 2.00M", context: "71% of allocation", comparison: "+15.2% vs last month", icon: "AED", status: "actual" },
   ],
   "Other Activities": [
-    { label: "Confirmed Meetings", value: "74", context: "Events tracked via CRM", comparison: "+26.3% vs last month", icon: "✓", status: "actual" },
+    { label: "Event Leads", value: "38", context: "Qualified event follow-ups", icon: "+", status: "actual" },
     { label: "Media Mentions", value: "142", context: "90% positive / neutral", comparison: "+10.5% vs last month", icon: "◎", status: "actual" },
     { label: "Approved Assets", value: "196", context: "82.4% approval rate", comparison: "+5.8% vs last month", icon: "▣", status: "actual" },
     { label: "Other Activities Spend", value: "AED 3.12M", context: "71% of allocation", comparison: "+12.7% vs last month", icon: "AED", status: "actual" },
@@ -173,13 +171,13 @@ function lineOption(series: { name: string; data: number[]; color: string }[], l
   };
 }
 
-function barOption(labels: string[], values: number[], suffix: string, highlight = -1, barWidth = 10): EChartsOption {
+function barOption(labels: string[], values: (number | null)[], suffix: string, highlight = -1, barWidth = 10): EChartsOption {
   return {
     animationDuration: 450, tooltip: { ...tooltip, valueFormatter: (v) => `${v}${suffix}` },
     grid: { left: 116, right: 54, top: 6, bottom: 8 },
     xAxis: { type: "value", show: false },
     yAxis: { type: "category", inverse: true, data: labels, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { ...baseText, fontSize: 12, width: 108, overflow: "truncate", interval: barWidth < 10 ? 0 : "auto" } },
-    series: [{ type: "bar", data: values.map((v, i) => ({ value: v, itemStyle: { color: i === highlight ? TEAL : BLUE, borderRadius: 5 } })), barWidth, showBackground: true, backgroundStyle: { color: PALE, borderRadius: 5 }, label: { show: true, position: "right", formatter: `{c}${suffix}`, ...baseText, fontSize: 11, fontWeight: 700 } }],
+    series: [{ type: "bar", data: values.map((v, i) => ({ value: v ?? "-", itemStyle: { color: i === highlight ? TEAL : BLUE, borderRadius: 5 } })), barWidth, showBackground: true, backgroundStyle: { color: PALE, borderRadius: 5 }, label: { show: true, position: "right", formatter: `{c}${suffix}`, ...baseText, fontSize: 11, fontWeight: 700 } }],
   };
 }
 
@@ -194,7 +192,7 @@ function ScaledValue({ children }: { children: string }) {
 
 function KpiRow({ items }: { items: Kpi[] }) {
   const { factor } = useContext(DashboardFilterContext);
-  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-full text-[14px] leading-tight font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[28px] leading-tight font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div>{item.comparison && <div className={`text-[12px] leading-tight font-semibold ${item.comparison.startsWith("-") ? "text-red-700" : "text-emerald-700"}`}><span aria-hidden="true">{item.comparison.startsWith("-") ? "▼" : "▲"}</span> {item.comparison}</div>}</article>)}</section>;
+  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : items.length === 2 ? "grid-cols-2" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-full text-[14px] leading-tight font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[28px] leading-tight font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div>{item.comparison && <div className={`text-[12px] leading-tight font-semibold ${item.comparison.startsWith("-") ? "text-red-700" : "text-emerald-700"}`}><span aria-hidden="true">{item.comparison.startsWith("-") ? "▼" : "▲"}</span> {item.comparison}</div>}</article>)}</section>;
 }
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
@@ -231,7 +229,7 @@ function OverviewView() {
     ["Digital", "Website Sessions", "12,946", "Actual", "Organic Search contributes 47.6% of sessions"],
     ["Social", "Post Impressions", "453K", "Actual", "106 posts published in the supplied period"],
     ["Paid Media", "Attributed Enquiries", "96", "Actual", "AED 620K spend; attribution live via ad-platform APIs"],
-    ["Events", "Confirmed Meetings", "74", "Actual", "Tracked via CRM through the reporting period"],
+    ["Events", "Event Leads", "38", "Actual", "Qualified leads across 5 events"],
     ["Markets & Terminals", "Relevant Page Visits", "42.8K", "Actual", "Digital interest across terminal and service pages"],
     ["Budget & ROI", "Budget Used", "71%", "Actual", "AED 5.12M spent; AED 736K committed"],
   ];
@@ -239,7 +237,7 @@ function OverviewView() {
     <Panel title="Digital Performance" className="col-span-4"><MetricTiles rows={[["Sessions","12,946","GA4 actual","actual"],["Users","9,410","GA4 actual","actual"],["Organic Sessions","6,159","47.6% channel share","actual"],["Conversions / Enquiries","286","Conversion export missing","plan"]]} /></Panel>
     <Panel title="Organic Social Performance" className="col-span-4"><MetricTiles rows={[["Impressions","453K","Reported aggregate","actual"],["Engagement Rate","13.98%","Reported rate","actual"],["Posts Published","106","Reported aggregate","actual"],["Followers","12K","Current audience","actual"]]} /></Panel>
     <Panel title="Paid Media Performance" className="col-span-4"><MetricTiles rows={[["Ad Spend","AED 620K","Media spend to date","actual"],["Paid Impressions","3.8M","Delivered impressions","actual"],["Link CTR","1.84%","Click-through rate","actual"],["Attributed Enquiries","96","Attributed enquiries","actual"]]} /></Panel>
-    <Panel title="Event Conversion" className="col-span-4"><EChart option={{ tooltip, grid:{left:18,right:18,top:20,bottom:24}, xAxis:{type:"category",data:["Accounts","Meetings","Follow-ups","Opportunities"],axisLabel:{...baseText,fontSize:11}}, yAxis:{type:"value",show:false}, series:[{type:"bar",data:[286,74,38,18],barWidth:22,itemStyle:{color:BLUE,borderRadius:[4,4,0,0]},label:{show:true,position:"top",fontSize:11,fontWeight:700}}] }} /></Panel>
+    <Panel title="Events & Leads" className="col-span-4"><EChart option={{ tooltip, grid:{left:18,right:18,top:20,bottom:24}, xAxis:{type:"category",data:["Events","Leads"],axisLabel:{...baseText,fontSize:11}}, yAxis:{type:"value",show:false}, series:[{type:"bar",data:[5,38],barWidth:22,itemStyle:{color:BLUE,borderRadius:[4,4,0,0]},label:{show:true,position:"top",fontSize:11,fontWeight:700}}] }} /></Panel>
     <Panel title="Markets & Terminals · Digital Interest" className="col-span-4"><EChart option={barOption(["Spain","UAE","Egypt"],[22.4,6.8,5.7],"K",1)} /></Panel>
     <Panel title="Budget & Commercial Influence" className="col-span-4"><div className="flex h-full flex-col justify-center p-2"><div className="mb-2 flex h-4 overflow-hidden rounded-full text-[9px] font-bold text-white"><span className="grid w-[71%] place-items-center bg-noatum-blue">Spent 71%</span><span className="grid w-[10%] place-items-center bg-noatum-teal">10%</span><span className="grid w-[19%] place-items-center bg-slate-400">19%</span></div><div className="grid grid-cols-2 gap-2"><div className="rounded border-l-[3px] border-noatum-blue bg-slate-50 px-2 py-1 text-[10px] text-slate-500">Actual Spend<b className="block text-[15px] text-noatum-deep"><ScaledValue>AED 5.12M</ScaledValue></b></div><div className="rounded border-l-[3px] border-noatum-teal bg-slate-50 px-2 py-1 text-[10px] text-slate-500">Influenced Pipeline<b className="block text-[15px] text-noatum-deep"><ScaledValue>AED 34.4M</ScaledValue></b></div></div><p className="mt-1 text-[9px] text-amber-700">Pipeline / Spend 6.7x · not ROMI</p></div></Panel>
     <Panel title="Management Performance Summary" className="management-summary col-span-12"><DataTable columns={[{label:"Area"},{label:"Primary KPI"},{label:"Current"},{label:"Data Status"},{label:"Management Reading"}]} rows={summary} /></Panel>
@@ -298,11 +296,11 @@ function PaidMediaView() {
 }
 
 function EventsView() {
-  const rows = [["Event 1","—","96","28","18","—","AED 3.6M"],["Event 2","—","72","19","11","—","AED 3.2M"],["Event 3","—","58","16","6","—","AED 1.6M"],["Event 4","—","36","7","3","—","AED 800K"],["Event 5","—","24","4","—","—","AED 400K"]];
+  const rows = [["Event 1","—","18"],["Event 2","—","11"],["Event 3","—","6"],["Event 4","—","3"],["Event 5","—","—"]];
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.35fr] gap-2">
-    <Panel title="Confirmed Meetings by Event" className="col-span-7 row-span-2"><EChart option={barOption(["Event 1","Event 2","Event 3","Event 4","Event 5"],[28,19,16,7,4],"")} /></Panel>
-    <Panel title="Event Conversion" className="col-span-5 row-span-2"><EChart option={{ tooltip, series:[{type:"funnel",left:"12%",right:"12%",top:14,bottom:12,minSize:"28%",maxSize:"100%",sort:"descending",gap:3,label:{show:true,position:"inside",formatter:"{b}  {c}",fontSize:9,color:"#fff"},itemStyle:{borderColor:"#fff",borderWidth:1},data:[{name:"Target Accounts",value:286,itemStyle:{color:BLUE}},{name:"Confirmed Meetings",value:74,itemStyle:{color:"#1972a7"}},{name:"Qualified Follow-ups",value:38,itemStyle:{color:TEAL}},{name:"Opportunities",value:18,itemStyle:{color:"#6ca8b9"}}]}] }} /></Panel>
-    <Panel title="Event Tracking" className="col-span-9"><DataTable columns={[{label:"Event"},{label:"Industry / Focus"},{label:"Target Accounts",sortable:true},{label:"Meetings",sortable:true},{label:"Qualified Follow-ups"},{label:"Opportunities",sortable:true},{label:"Influenced Pipeline",sortable:true}]} rows={rows} note="Names, dates, industries, locations and business focus are unconfirmed." /></Panel>
+    <Panel title="Leads by Event" className="col-span-7 row-span-2"><EChart option={barOption(["Event 1","Event 2","Event 3","Event 4","Event 5"],[18,11,6,3,null],"")} /></Panel>
+    <Panel title="Events & Leads" className="col-span-5 row-span-2"><MetricTiles rows={[["Events","5","Reporting period","actual"],["Event Leads","38","Qualified event follow-ups","actual"]]} /></Panel>
+    <Panel title="Event Tracking" className="col-span-9"><DataTable columns={[{label:"Event"},{label:"Industry / Focus"},{label:"Leads",sortable:true}]} rows={rows} note="Names, dates, industries, locations and business focus are unconfirmed." /></Panel>
     <Panel title="Events Calendar" className="col-span-3"><div className="flex h-full flex-col p-2"><div className="mb-1 rounded border border-amber-200 bg-amber-50 p-2 text-[8px]"><b>Schedule pending confirmation</b><br/><span className="text-slate-500">No dates or locations confirmed.</span></div>{[1,2,3,4,5].map(n => <div key={n} className="flex flex-1 items-center gap-2 border-b text-[9px]"><span className="rounded bg-slate-100 px-2 py-1 text-[7px] font-bold">TBC</span><b>Event {n}</b></div>)}</div></Panel>
   </div>;
 }
@@ -380,8 +378,7 @@ function ReportingView() {
     ["Paid Media Spend", "metric", "AED 120K", "AED 145K", "AED 165K", "AED 430K", "AED 190K", "AED 620K", "AED 150K", "AED 470K", "AED 150K", "AED 620K", "AED 650K"],
     ["Digital Budget Used", "highlight", "61%", "65%", "68%", "68%", "71%", "71%", "70%", "70%", "71%", "71%", "75%"],
     ["Other Activities", "section", "", "", "", "", "", "", "", "", "", "", ""],
-    ["Confirmed Event Meetings", "metric", "14", "17", "19", "50", "24", "74", "18", "56", "18", "74", "70"],
-    ["Qualified Follow-ups", "metric", "8", "9", "10", "27", "11", "38", "9", "29", "9", "38", "40"],
+    ["Event Leads", "metric", "8", "9", "10", "27", "11", "38", "9", "29", "9", "38", "40"],
     ["Media Mentions", "metric", "28", "34", "38", "100", "42", "142", "33", "109", "33", "142", "135"],
     ["Positive / Neutral Coverage", "metric", "88%", "89%", "91%", "89%", "90%", "90%", "90%", "90%", "90%", "90%", "92%"],
     ["Approved Brand Assets", "metric", "41", "48", "52", "141", "55", "196", "49", "147", "49", "196", "180"],
@@ -430,10 +427,10 @@ function DigitalActivitiesView() {
 
 function OtherActivitiesView() {
   return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_1.25fr] gap-2">
-    <Panel title="Activity Outcomes" className="col-span-7 row-span-2"><EChart option={barOption(["Events · meetings","PR · mentions","Branding · approved assets","Markets · enquiries"],[74,142,196,286],"",1)} /></Panel>
+    <Panel title="Activity Outcomes" className="col-span-7 row-span-2"><EChart option={barOption(["Events · leads","PR · mentions","Branding · approved assets","Markets · enquiries"],[38,142,196,286],"",1)} /></Panel>
     <Panel title="Other Activities Budget · AED K" className="col-span-5"><EChart option={barOption(["Events","PR & Media","Branding","Markets & Terminals"],[1144,624,792,560],"K",0)} /></Panel>
-    <Panel title="Commercial Influence" className="col-span-5"><MetricTiles rows={[["Pipeline","AED 18.0M","Activity-associated value","actual"],["Confirmed Meetings","74","Tracked through CRM","actual"],["Positive / Neutral PR","90%","Coverage sentiment","actual"],["Budget Used","71%","AED 3.12M spent","actual"]]} /></Panel>
-    <Panel title="Other Activity Summary" className="activity-summary col-span-12"><DataTable columns={[{label:"Activity"},{label:"Primary Result",sortable:true},{label:"Commercial Outcome"},{label:"Spend",sortable:true},{label:"Management Reading"}]} rows={[["Events","74 confirmed meetings","AED 9.6M pipeline","AED 1.14M","Prioritise qualified follow-ups"],["PR & Media","142 mentions","90% positive / neutral","AED 624K","Maintain coverage quality"],["Branding","196 approved assets","82.4% approval rate","AED 792K","Turnaround averages 3.2 days"],["Markets & Terminals","42.8K relevant visits","286 enquiries","AED 560K","UAE is the fastest-growing market"]]} note="Other activities spend: AED 3.12M · 71% of allocated budget." /></Panel>
+    <Panel title="Commercial Influence" className="col-span-5"><MetricTiles rows={[["Pipeline","AED 18.0M","Activity-associated value","actual"],["Event Leads","38","Qualified event follow-ups","actual"],["Positive / Neutral PR","90%","Coverage sentiment","actual"],["Budget Used","71%","AED 3.12M spent","actual"]]} /></Panel>
+    <Panel title="Other Activity Summary" className="activity-summary col-span-12"><DataTable columns={[{label:"Activity"},{label:"Primary Result",sortable:true},{label:"Commercial Outcome"},{label:"Spend",sortable:true},{label:"Management Reading"}]} rows={[["Events","5 events","38 leads","AED 1.14M","Follow up with qualified leads"],["PR & Media","142 mentions","90% positive / neutral","AED 624K","Maintain coverage quality"],["Branding","196 approved assets","82.4% approval rate","AED 792K","Turnaround averages 3.2 days"],["Markets & Terminals","42.8K relevant visits","286 enquiries","AED 560K","UAE is the fastest-growing market"]]} note="Other activities spend: AED 3.12M · 71% of allocated budget." /></Panel>
   </div>;
 }
 
