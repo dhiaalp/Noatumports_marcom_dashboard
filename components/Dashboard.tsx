@@ -194,7 +194,7 @@ function ScaledValue({ children }: { children: string }) {
 
 function KpiRow({ items }: { items: Kpi[] }) {
   const { factor } = useContext(DashboardFilterContext);
-  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-full truncate text-[14px] font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[28px] leading-tight font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div>{item.comparison && <div className={`truncate text-[12px] font-semibold ${item.comparison.startsWith("-") ? "text-red-700" : "text-emerald-700"}`}><span aria-hidden="true">{item.comparison.startsWith("-") ? "▼" : "▲"}</span> {item.comparison}</div>}</article>)}</section>;
+  return <section className={`grid min-h-0 gap-2 ${items.length === 5 ? "grid-cols-5" : "grid-cols-4"}`}>{items.map(item => <article key={item.label} className="relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-[4px] border border-[#c7cdd1] border-b-[5px] border-b-noatum-navy bg-white px-3 text-center shadow-card"><div className="max-w-full text-[18px] leading-tight font-bold text-noatum-deep">{item.label}</div><div className="truncate text-[36px] leading-tight font-extrabold tracking-tight text-noatum-deep">{scaleDisplayValue(item.value, factor)}</div>{item.comparison && <div className={`text-[16px] leading-tight font-semibold ${item.comparison.startsWith("-") ? "text-red-700" : "text-emerald-700"}`}><span aria-hidden="true">{item.comparison.startsWith("-") ? "▼" : "▲"}</span> {item.comparison}</div>}</article>)}</section>;
 }
 
 function MetricTiles({ rows }: { rows: [string, string, string, "actual" | "plan"][] }) {
@@ -235,7 +235,7 @@ function OverviewView() {
     ["Markets & Terminals", "Relevant Page Visits", "42.8K", "Actual", "Digital interest across terminal and service pages"],
     ["Budget & ROI", "Budget Used", "71%", "Actual", "AED 5.12M spent; AED 736K committed"],
   ];
-  return <div className="grid h-full min-h-0 grid-cols-12 grid-rows-[1fr_1fr_auto] gap-2">
+  return <div className="grid h-full min-h-[740px] grid-cols-12 grid-rows-[1fr_1fr_auto] gap-2">
     <Panel title="Digital Performance" className="col-span-4"><MetricTiles rows={[["Sessions","12,946","GA4 actual","actual"],["Users","9,410","GA4 actual","actual"],["Organic Sessions","6,159","47.6% channel share","actual"],["Conversions / Enquiries","286","Conversion export missing","plan"]]} /></Panel>
     <Panel title="Organic Social Performance" className="col-span-4"><MetricTiles rows={[["Impressions","453K","Reported aggregate","actual"],["Engagement Rate","13.98%","Reported rate","actual"],["Posts Published","106","Reported aggregate","actual"],["Followers","12K","Current audience","actual"]]} /></Panel>
     <Panel title="Paid Media Performance" className="col-span-4"><MetricTiles rows={[["Ad Spend","AED 620K","Media spend to date","actual"],["Paid Impressions","3.8M","Delivered impressions","actual"],["Link CTR","1.84%","Click-through rate","actual"],["Attributed Enquiries","96","Attributed enquiries","actual"]]} /></Panel>
@@ -545,10 +545,10 @@ export default function Dashboard() {
         <nav className="dashboard-nav grid h-[30px] w-[56%] grid-cols-4 gap-2">{tabs.map(tab => <button key={tab} onClick={()=>selectTab(tab)} className={`truncate rounded-[2px] border px-3 text-[11px] font-semibold transition ${active===tab?"border-white bg-white text-noatum-deep":"border-white/10 bg-[#153b6a] text-white hover:bg-[#21578a]"}`}>{tab}</button>)}</nav>
       </div>
     </header>
-    <main className={`dashboard-main relative grid min-h-0 flex-1 ${active === "Report" ? "grid-rows-[minmax(0,1fr)] bg-white p-0" : "z-10 -mt-[31px] grid-rows-[86px_minmax(0,1fr)] gap-2 px-2 pb-2"}`}>
+    <main className={`dashboard-main relative grid min-h-0 flex-1 ${active === "Report" ? "grid-rows-[minmax(0,1fr)] bg-white p-0" : "z-10 -mt-[31px] grid-rows-[120px_minmax(0,1fr)] gap-2 px-2 pb-2"}`}>
       <DashboardFilterContext.Provider value={filterState}>
         {active !== "Report" && <KpiRow items={activeKpis} />}
-        <div className="min-h-0">{active === "Overview" ? <OverviewView /> : active === "Digital Activities" ? <DigitalActivitiesView /> : active === "Other Activities" ? <OtherActivitiesView /> : <ReportingView />}</div>
+        <div className={`min-h-0 ${active === "Overview" ? "overflow-auto" : ""}`}>{active === "Overview" ? <OverviewView /> : active === "Digital Activities" ? <DigitalActivitiesView /> : active === "Other Activities" ? <OtherActivitiesView /> : <ReportingView />}</div>
       </DashboardFilterContext.Provider>
       <span aria-live="polite" className="sr-only">{notice || (filterState.filtered ? `Active filters: ${selectedEntries.map(([label, options]) => `${label}: ${values[label] ?? options[0]}`).join(" · ")}. Proportional filtered view.` : "Dashboard ready.")}</span>
     </main>

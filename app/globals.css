@@ -47,15 +47,16 @@ button:focus-visible, select:focus-visible { outline: 2px solid #9bb2ce; outline
   .dashboard-header { height: 72px; }
   .dashboard-header-top { height: 44px; }
   .dashboard-nav { height: 28px; }
-  .dashboard-main { grid-template-rows: 82px minmax(0, 1fr); }
+  .dashboard-main { grid-template-rows: 120px minmax(0, 1fr); }
   .metric-tile-context { display: none; }
   .metric-tile { padding-top: 2px; padding-bottom: 2px; }
 }
 
-.management-summary .panel-title { height: 36px; font-size: 16px; }
-.management-summary .compact-table { font-size: 14px; }
-.management-summary .compact-table th { font-size: 12px; padding-top: 8px; padding-bottom: 8px; }
-.management-summary .compact-table td { padding-top: 8px; padding-bottom: 8px; }
+.management-summary .panel-title { height: 44px; font-size: 20px; }
+.management-summary .compact-table { min-width: 1100px; font-size: 18px; line-height: 1.4; }
+.management-summary .compact-table th { font-size: 16px; padding-top: 12px; padding-bottom: 12px; }
+.management-summary .compact-table td { padding: 10px 12px; overflow-wrap: break-word; }
+.management-summary .compact-table th:last-child { width: 36%; }
 
 @media (max-width: 900px) {
   body { overflow: auto; }
